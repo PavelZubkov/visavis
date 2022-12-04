@@ -5447,6 +5447,8 @@ var $;
             heatcolors = ['rgb(150,0,90)', 'rgb(0,0,200)', 'rgb(0,25,255)', 'rgb(0,152,255)', 'rgb(44,255,150)', 'rgb(151,255,0)', 'rgb(255,234,0)', 'rgb(255,111,0)', 'rgb(255,0,0)'];
             colorset = ['#3e3f95', '#c00', '#FE9A2E', '#090', '#f0f', '#09f', '#666', '#0f3', '#0ff', '#90c'];
             render() {
+                if (!this.data() || this.data().use_visavis_type !== 'matrix')
+                    return;
                 const d3 = $lib_d3.all();
                 const is_integer = (num) => Math.floor(num) === num;
                 const svgdim = 800;

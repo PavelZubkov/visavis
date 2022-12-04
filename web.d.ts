@@ -1529,21 +1529,8 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
-    class $mpds_visavis extends $mol_book2 {
-        plugins(): readonly any[];
-        pages(): readonly any[];
-        Theme(): $$.$mol_theme_auto;
-        Source(): $mol_link_source;
-        Lights(): $$.$mol_lights_toggle;
-        files_open(next?: any): any;
-        Open(): $mol_button_open;
-        file_title(id: any): string;
-        File(id: any): $$.$mol_link;
-        history_rows(): readonly any[];
-        History(): $$.$mol_list;
-        Menu(): $mol_page;
-        file_current(): string;
-        Plot(): $mol_page;
+    class $mpds_visavis_matrix extends $mol_view {
+        file(): Object;
     }
 }
 
@@ -1559,8 +1546,73 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    class $lib_plotly extends $mol_object2 {
+    class $lib_d3 extends $mol_object2 {
         static all(): any;
+    }
+}
+
+declare namespace $ {
+}
+
+declare namespace $.$$ {
+    type Matrix = {
+        error: null | Error;
+        payload: {
+            nodes: {
+                name: string;
+                num: number;
+                nump: number;
+                size: number;
+                rea: number;
+                rpp: number;
+                rion: number;
+                rcov: number;
+                rmet: number;
+                tmelt: number;
+                eneg: number;
+                count?: number;
+            }[];
+            links: {
+                source: number;
+                target: number;
+                value: number;
+                cmt: string;
+                cmp?: string;
+            }[];
+            fixel: null;
+        };
+        answerto: string;
+        use_visavis_type: 'matrix';
+    };
+    export class $mpds_visavis_matrix extends $.$mpds_visavis_matrix {
+        data(): Matrix;
+        el_orders: any;
+        heatcolors: string[];
+        colorset: string[];
+        render(): void;
+        auto(): void;
+    }
+    export {};
+}
+
+declare namespace $ {
+    class $mpds_visavis extends $mol_book2 {
+        plugins(): readonly any[];
+        pages(): readonly any[];
+        Theme(): $$.$mol_theme_auto;
+        Source(): $mol_link_source;
+        Lights(): $$.$mol_lights_toggle;
+        files_open(next?: any): any;
+        Open(): $mol_button_open;
+        file_title(id: any): string;
+        File(id: any): $$.$mol_link;
+        history_rows(): readonly any[];
+        History(): $$.$mol_list;
+        Menu(): $mol_page;
+        file_current_title(): string;
+        file_current(): Object;
+        Matrix(): $$.$mpds_visavis_matrix;
+        Plot(): $mol_page;
     }
 }
 
@@ -1580,8 +1632,9 @@ declare namespace $.$$ {
         }[];
         file_title(id: number): string;
         history_rows(): $mol_link[];
-        file_current(): string;
-        plotly(): void;
+        file_current_title(): string;
+        file_current(): any;
+        d3(): void;
         auto(): void;
     }
 }

@@ -5314,6 +5314,257 @@ var $;
 "use strict";
 var $;
 (function ($) {
+    class $mpds_visavis_matrix extends $mol_view {
+        file() {
+            const obj = new this.$.Object();
+            return obj;
+        }
+    }
+    __decorate([
+        $mol_mem
+    ], $mpds_visavis_matrix.prototype, "file", null);
+    $.$mpds_visavis_matrix = $mpds_visavis_matrix;
+})($ || ($ = {}));
+//mpds/visavis/matrix/-view.tree/matrix.view.tree.ts
+;
+"use strict";
+var $;
+(function ($) {
+    function $mol_wire_sync(obj) {
+        return new Proxy(obj, {
+            get(obj, field) {
+                const val = obj[field];
+                if (typeof val !== 'function')
+                    return val;
+                const temp = $mol_wire_task.getter(val);
+                return function $mol_wire_sync(...args) {
+                    const fiber = temp(obj, args);
+                    return fiber.sync();
+                };
+            },
+            apply(obj, self, args) {
+                const temp = $mol_wire_task.getter(obj);
+                const fiber = temp(self, args);
+                return fiber.sync();
+            },
+        });
+    }
+    $.$mol_wire_sync = $mol_wire_sync;
+})($ || ($ = {}));
+//mol/wire/sync/sync.ts
+;
+"use strict";
+var $;
+(function ($) {
+    class $mol_import extends $mol_object2 {
+        static module(uri) {
+            return $mol_wire_sync(this).module_async(uri);
+        }
+        static module_async(uri) {
+            return import(uri);
+        }
+        static script(uri) {
+            return $mol_wire_sync(this).script_async(uri);
+        }
+        static script_async(uri) {
+            const doc = $mol_dom_context.document;
+            const script = doc.createElement('script');
+            script.src = uri;
+            doc.head.appendChild(script);
+            return new Promise((done, fail) => {
+                script.onload = () => done($mol_dom_context);
+                script.onerror = () => fail(new Error(`Can not import ${uri}`));
+            });
+        }
+        static style(uri) {
+            return $mol_wire_sync(this).style_async(uri);
+        }
+        static style_async(uri) {
+            const doc = $mol_dom_context.document;
+            const style = doc.createElement('link');
+            style.rel = 'stylesheet';
+            style.href = uri;
+            doc.head.appendChild(style);
+            return new Promise((done, fail) => {
+                style.onload = () => done(style.sheet);
+                style.onerror = () => fail(new Error(`Can not import ${uri}`));
+            });
+        }
+    }
+    __decorate([
+        $mol_mem_key
+    ], $mol_import, "module", null);
+    __decorate([
+        $mol_mem_key
+    ], $mol_import, "script", null);
+    __decorate([
+        $mol_mem_key
+    ], $mol_import, "style", null);
+    $.$mol_import = $mol_import;
+})($ || ($ = {}));
+//mol/import/import.ts
+;
+"use strict";
+var $;
+(function ($) {
+    class $lib_d3 extends $mol_object2 {
+        static all() {
+            return $mol_import.script('https://cdn.jsdelivr.net/npm/d3@7').d3;
+        }
+    }
+    __decorate([
+        $mol_mem
+    ], $lib_d3, "all", null);
+    $.$lib_d3 = $lib_d3;
+})($ || ($ = {}));
+//lib/d3/d3.ts
+;
+"use strict";
+var $;
+(function ($) {
+    $mol_style_attach("mpds/visavis/matrix/matrix.view.css", "#pdtracer{display:none;position:fixed;z-index:9;top:15px;left:50%;width:600px;height:40px;margin-left:-300px;font-size:0.9em;text-align:center;line-height:40px;letter-spacing:0.5px;}\n#overlay{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:#fff;z-index:8;overflow:hidden;}\n#urge{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:#fff;z-index:6;overflow:hidden;text-align:center;font-size:1.25em;padding-top:6em;user-select:all;-webkit-user-drag:none;}\n#landing{display:none;position:fixed;left:0;top:0;right:0;bottom:0;height:auto;z-index:5;background:#fff;margin:0;text-align:center;font-size:2vmin;padding:10px;line-height:4vmin;}\n#landing a{color:#666;text-decoration:none;border-bottom:1px solid #999;}\n#legend{width:350px;margin:100px auto 0;border-radius:15px;background:#bfbfbf;color:#fff;padding:5px 15px;}\n#triangle{width:0;height:0;margin:-2px auto 0;border-left:20px solid transparent;border-right:20px solid transparent;border-top:20px solid #bfbfbf;}\n#visavis{width:100%;height:100%;z-index:0;}\n\n#matrixXxtitle{display:none;position:absolute;z-index:100;top:3px;left:50%;width:400px;height:auto;margin-left:-200px;text-align:center;font-size:1.2vw;font-style:italic;letter-spacing:1px;}\n#matrixXytitle{display:none;position:absolute;z-index:100;top:50%;left:3%;width:400px;height:auto;margin-left:-200px;text-align:center;font-size:1.2vw;font-style:italic;letter-spacing:1px;transform:rotate(-90deg);}\n\n#heatmaplegend{display:none;position:absolute;z-index:100;bottom:50px;left:50%;width:600px;height:auto;margin-left:-300px;text-align:center;}\n#heatmaplegend b{display:inline-block;height:0.7em;width:0.7em;}\n#heatmaplegend span{display:inline-block;margin:0 15px;font-size:1em;letter-spacing:1px;}\n\n#cmplegend{display:none;position:absolute;z-index:101;bottom:50px;left:50%;width:1000px;height:auto;margin-left:-500px;text-align:center;}\n#cmplegend span{display:inline-block;margin:0 4px;padding:0 5px;font-size:0.8em;}\n\n#difflegend{display:none;position:absolute;z-index:100;bottom:75px;left:50%;width:800px;height:auto;margin-left:-400px;text-align:center;font-size:0.8em;padding:3px;letter-spacing:0.5px;}\n#difflegend span{display:inline-block;padding:0 3px;background:#666;color:#fff;}\n#expander{display:none;position:fixed;top:25px;right:1.5%;width:32px;height:32px;z-index:100;cursor:pointer;background:url(data:image/gif;base64,R0lGODlhIAAgAIABAMzMzP///yH5BAEKAAEALAAAAAAgACAAAAJgDI4Jwc0KDYxOzourxRzp13VfE3IjWE7nlipja1awSM60vaBtfUjy7uidKJTVJxH0GIe55HIldD6PSt30h2Q1qdjSb8MDar1jXLWM05hd1DXUzTS/4er1WWevi2j6S6AAADs=) center center no-repeat;}\n#switcher{display:none;position:fixed;top:16px;left:16px;width:30px;height:23px;z-index:10;cursor:pointer;background:url(data:image/gif;base64,R0lGODlhHgAXAIABAAAAAP///yH5BAEKAAEALAAAAAAeABcAAAJVjA0Jx63bzkuRTegorXapjHHiJ23iaAbkya1qyFamG0ckXXcQniNb2su8do/TxHdJhpTMpvMJhbaS06LsByxZbViYdvtFeovgssv61DG/F67SzWOHCgA7) center center no-repeat;}\n\n#diffplot{  display:none;position:fixed;top:55%;right:-4%;z-index:13;padding:3px;width:200px;height:20px;text-align:center;transform:rotate(-90deg);background:#fff;}\n#nonformers{display:none;position:fixed;top:55%;right:-4%;z-index:10;padding:3px;width:200px;height:20px;text-align:center;transform:rotate(-90deg);background:#fff;margin-top:-100px;}\n#fixel{     display:none;position:fixed;top:13%;right:-4%;z-index:11;padding:3px;width:200px;height:20px;text-align:center;transform:rotate(-90deg);background:#fff;}\n#fixelXlist{display:none;position:fixed;top:13%;right:-4%;z-index:12;padding:3px;width:200px;height:20px;text-align:center;transform:rotate(-90deg);background:#fff;font-size:1.2vw;font-style:italic;}\n#fixelXlistXselect{font-family:Exo2,Arial;font-size:1.2vw;}\n#diffplot input, #diffplot label, #nonformers input, #nonformers label, #fixel input, #fixel label{cursor:pointer;font-size:1.1vw;text-rendering:optimizeSpeed;font-style:italic;line-height:0.5vw;}\n\ng.slice{cursor:pointer;}\npath{pointer-events:painted;}\n\n.axis path, .axis line{fill:none;stroke:#333;shape-rendering:crispEdges;}\n\nrect.nonformer{fill:url(#nonformer) !important;fill-opacity:1.0 !important;}\nrect.visited{fill:#0f0 !important;fill-opacity:1.0 !important;}\nrect.bgmatrix{fill:#f6f6f6;}\nrect.bgmatrix.hidden{fill:#fff;}\nline{stroke:#fff;}\ntext.active{fill:#f00;font-weight:bold;}\ntext.hidden{display:none;}\ndiv.plotlyYnotifier, .hoverlayer text {font-family:Exo2,Arial !important;}\npath.point{cursor:pointer;}\ng.hovertext{cursor:pointer;pointer-events:all;}\n\n.edge{fill:none;stroke:#ddd;stroke-width:1px;}\n.edge.prel{stroke:#FE9A2E;}\n.edge.hrel{stroke:#3e3f95;}\n.edge.trel{stroke:#3e3f95;}\n.edge.arel{stroke:#E36868;}\n.edge.grel{stroke:#acc2b3;}\ncircle{cursor:move;fill:#ccc;}\ncircle.f{fill:#acc2b3;}\ncircle.p{fill:#FE9A2E;}\ncircle.h, circle.t{fill:#3e3f95;}\ncircle.a{fill:#E36868;}\ntext.micro{font-size:11px;letter-spacing:-0.5px;}\ntext.macro{font-size:14px;letter-spacing:0.5px;}\ntext.captions{cursor:pointer;fill:#333;}\ntext.shadow{stroke:#fff;stroke-width:3px;stroke-opacity:0.8;}\n");
+})($ || ($ = {}));
+//mpds/visavis/matrix/-css/matrix.view.css.ts
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $mpds_visavis_matrix extends $.$mpds_visavis_matrix {
+            data() {
+                return this.file();
+            }
+            el_orders = {};
+            heatcolors = ['rgb(150,0,90)', 'rgb(0,0,200)', 'rgb(0,25,255)', 'rgb(0,152,255)', 'rgb(44,255,150)', 'rgb(151,255,0)', 'rgb(255,234,0)', 'rgb(255,111,0)', 'rgb(255,0,0)'];
+            colorset = ['#3e3f95', '#c00', '#FE9A2E', '#090', '#f0f', '#09f', '#666', '#0f3', '#0ff', '#90c'];
+            render() {
+                const d3 = $lib_d3.all();
+                const is_integer = (num) => Math.floor(num) === num;
+                const svgdim = 800;
+                const matrix = [];
+                const nodes = this.data().payload.nodes;
+                let minvalue = 1;
+                let maxvalue = 1;
+                let heatmap = false;
+                const actual_w = svgdim + 24 + 0;
+                const svg = d3.select("mpds_visavis_matrix").append("svg")
+                    .attr("width", actual_w)
+                    .attr("height", svgdim + 26 + 0)
+                    .style('position', 'absolute')
+                    .style('left', '50%')
+                    .style('font-size', '1.1vmin')
+                    .style('letter-spacing', '1px')
+                    .style('margin-left', -actual_w / 2 + 'px')
+                    .append("g")
+                    .attr("transform", "translate(" + 24 + "," + 26 + ")");
+                nodes.forEach(function (node, i) {
+                    node.count = 0;
+                    matrix[i] = d3.range(95).map(function (j) {
+                        return { x: j, y: i, z: 0, cmt: "", cmp: 0 };
+                    });
+                });
+                this.data().payload.links.forEach(function (link) {
+                    matrix[link.source][link.target].z += link.value;
+                    matrix[link.target][link.source].z += link.value;
+                    matrix[link.source][link.target].cmt = link.cmt;
+                    matrix[link.target][link.source].cmt = link.cmt;
+                    matrix[link.source][link.target].cmp = link.cmp || 0;
+                    matrix[link.target][link.source].cmp = link.cmp || 0;
+                    nodes[link.source].count += link.value;
+                    nodes[link.target].count += link.value;
+                    if (link.value < minvalue)
+                        minvalue = link.value;
+                    else if (link.value > maxvalue)
+                        maxvalue = link.value;
+                    if (!heatmap && !is_integer(link.value))
+                        heatmap = true;
+                    else if (link.cmp)
+                        heatmap = false;
+                });
+                ['num', 'nump', 'size', 'rea', 'rpp', 'rion', 'rcov', 'rmet', 'tmelt', 'eneg'].forEach(order => {
+                    if (!this.el_orders[order])
+                        this.el_orders[order] = d3.range(95).sort(function (a, b) { return nodes[a][order] - nodes[b][order]; });
+                });
+                this.el_orders.count = d3.range(95).sort((a, b) => nodes[b].count - nodes[a].count);
+                const arrange2 = d3.scaleBand().domain(this.el_orders.nump).range([0, svgdim]);
+                const setopac = heatmap ? () => 1 : d3.scaleLinear().domain([minvalue, maxvalue]).range([0.2, 1]).clamp(true);
+                const heatmap_color = d3.scaleLinear().domain(d3.range(0, 1, 1.0 / (this.heatcolors.length - 1))).range(this.heatcolors);
+                const scale_color = d3.scaleLinear().domain([minvalue, maxvalue]).range([0, 1]);
+                const setcolor = heatmap
+                    ? (d, cmp) => cmp ? this.colorset[1] : heatmap_color(scale_color(d))
+                    : (d, cmp) => this.colorset[cmp] || '#ccc';
+                svg.html('<defs><pattern id="nonformer" patternUnits="userSpaceOnUse" width="4" height="4"><path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" style="stroke:#ddd;stroke-width:1" /></pattern></defs>');
+                svg.append("rect")
+                    .attr("class", "bgmatrix")
+                    .attr("width", svgdim)
+                    .attr("height", svgdim);
+                const row = svg.selectAll(".row")
+                    .data(matrix)
+                    .enter().append("g")
+                    .attr("class", "row")
+                    .attr("transform", function (d, i) { return "translate(0," + arrange2(i) + ")"; })
+                    .each(process);
+                row.append("line")
+                    .attr("x2", svgdim);
+                row.append("text")
+                    .attr("x", -6)
+                    .attr("y", arrange2.bandwidth() / 2)
+                    .attr("dy", ".32em")
+                    .attr("text-anchor", "end")
+                    .text((d, i) => nodes[i].name);
+                const column = svg.selectAll(".column")
+                    .data(matrix)
+                    .enter().append("g")
+                    .attr("class", "column")
+                    .attr("transform", (d, i) => "translate(" + arrange2(i) + ")rotate(-90)");
+                column.append("line")
+                    .attr("x1", -svgdim);
+                column.append("text")
+                    .attr("x", 6)
+                    .attr("y", arrange2.bandwidth() / 2)
+                    .attr("dy", ".32em")
+                    .attr("text-anchor", "start")
+                    .text(function (d, i) { return nodes[i].name; });
+                function process(row) {
+                    const cell = d3.select(this).selectAll(".cell")
+                        .data(row.filter((d) => d.z))
+                        .enter().append("rect")
+                        .attr("class", function (d) { return d.nonformer ? "nonformer cell" : "cell"; })
+                        .attr("id", function (d) { return "c_" + nodes[d.x].num.toString() + "_" + nodes[d.y].num.toString(); })
+                        .attr("x", function (d) { return arrange2(d.x); })
+                        .attr("width", arrange2.bandwidth())
+                        .attr("height", arrange2.bandwidth())
+                        .style("fill-opacity", function (d) { return setopac(d.z); })
+                        .style("fill", function (d) { return setcolor(d.z, d.cmp); })
+                        .append("svg:title").text(function (d) {
+                        if (!d.cmt)
+                            return "";
+                        let capt = d.cmt + ": " + d.z;
+                        if (!heatmap)
+                            capt += " " + ((d.z == 1) ? "entry" : "entries");
+                        return capt;
+                    });
+                }
+            }
+            auto() {
+                this.render();
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $mpds_visavis_matrix.prototype, "data", null);
+        __decorate([
+            $mol_mem
+        ], $mpds_visavis_matrix.prototype, "render", null);
+        $$.$mpds_visavis_matrix = $mpds_visavis_matrix;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+//mpds/visavis/matrix/matrix.view.ts
+;
+"use strict";
+var $;
+(function ($) {
     class $mpds_visavis extends $mol_book2 {
         plugins() {
             return [
@@ -5384,13 +5635,24 @@ var $;
             ];
             return obj;
         }
-        file_current() {
+        file_current_title() {
             return "";
+        }
+        file_current() {
+            const obj = new this.$.Object();
+            return obj;
+        }
+        Matrix() {
+            const obj = new this.$.$mpds_visavis_matrix();
+            obj.file = () => this.file_current();
+            return obj;
         }
         Plot() {
             const obj = new this.$.$mol_page();
-            obj.title = () => this.file_current();
-            obj.body = () => [];
+            obj.title = () => this.file_current_title();
+            obj.body = () => [
+                this.Matrix()
+            ];
             return obj;
         }
     }
@@ -5420,36 +5682,16 @@ var $;
     ], $mpds_visavis.prototype, "Menu", null);
     __decorate([
         $mol_mem
+    ], $mpds_visavis.prototype, "file_current", null);
+    __decorate([
+        $mol_mem
+    ], $mpds_visavis.prototype, "Matrix", null);
+    __decorate([
+        $mol_mem
     ], $mpds_visavis.prototype, "Plot", null);
     $.$mpds_visavis = $mpds_visavis;
 })($ || ($ = {}));
 //mpds/visavis/-view.tree/visavis.view.tree.ts
-;
-"use strict";
-var $;
-(function ($) {
-    function $mol_wire_sync(obj) {
-        return new Proxy(obj, {
-            get(obj, field) {
-                const val = obj[field];
-                if (typeof val !== 'function')
-                    return val;
-                const temp = $mol_wire_task.getter(val);
-                return function $mol_wire_sync(...args) {
-                    const fiber = temp(obj, args);
-                    return fiber.sync();
-                };
-            },
-            apply(obj, self, args) {
-                const temp = $mol_wire_task.getter(obj);
-                const fiber = temp(self, args);
-                return fiber.sync();
-            },
-        });
-    }
-    $.$mol_wire_sync = $mol_wire_sync;
-})($ || ($ = {}));
-//mol/wire/sync/sync.ts
 ;
 "use strict";
 var $;
@@ -5505,14 +5747,18 @@ var $;
             history_rows() {
                 return this.history().map((_, index) => this.File(index)).reverse();
             }
-            file_current() {
+            file_current_title() {
                 return this.$.$mol_state_arg.value('file') ?? '';
             }
-            plotly() {
-                console.log(111, $lib_plotly.all());
+            file_current() {
+                const found = this.history().find(obj => obj.title === this.file_current_title());
+                return found?.data;
+            }
+            d3() {
+                console.log($lib_d3.all());
             }
             auto() {
-                this.plotly();
+                this.d3();
             }
         }
         __decorate([
@@ -5523,7 +5769,7 @@ var $;
         ], $mpds_visavis.prototype, "history", null);
         __decorate([
             $mol_mem
-        ], $mpds_visavis.prototype, "plotly", null);
+        ], $mpds_visavis.prototype, "d3", null);
         $$.$mpds_visavis = $mpds_visavis;
     })($$ = $.$$ || ($.$$ = {}));
 })($ || ($ = {}));

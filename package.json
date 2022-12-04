@@ -138,9 +138,11 @@
     "$mol_support_css",
     "$mol_support",
     "$mol_page",
-    "$mol_wire_sync",
-    "$lib_plotly",
-    "$lib"
+    "$mpds_visavis_matrix",
+    "$lib_d3",
+    "$lib",
+    "$mol_import",
+    "$mol_wire_sync"
   ],
   "dependencies": {
     "jsdom": "*",

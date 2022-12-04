@@ -182,6 +182,9 @@ $mol_page $mol_view
 			dom_name \footer
 			sub <= foot /$mol_view
 
+$mpds_visavis_matrix $mol_view
+	file Object
+
 $mpds_visavis $mol_book2
 	plugins /
 		<= Theme $mol_theme_auto
@@ -201,5 +204,7 @@ $mpds_visavis $mol_book2
 						arg * file <= file_title* \
 						title <= file_title*
 		<= Plot $mol_page
-			title <= file_current \
+			title <= file_current_title \
 			body /
+				<= Matrix $mpds_visavis_matrix
+					file <= file_current Object

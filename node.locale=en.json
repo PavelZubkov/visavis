@@ -1,4 +1,22 @@
 {
 	"$mol_lights_toggle_hint": "Toggle lights",
-	"$mol_link_source_hint": "Source code"
+	"$mol_link_source_hint": "Source code",
+	"$mol_select_Filter_hint": "Filter..",
+	"$mol_select_hint": "Pick..",
+	"$mol_select_no_options_message": "No options",
+	"$visavis_matrix_Nonformers_hint": "Continuous solid solutions and complete insolubility systems",
+	"$visavis_matrix_Nonformers_title": "Show non-formers",
+	"$visavis_matrix_heatmap_higest": "Higest",
+	"$visavis_matrix_heatmap_lowest": "Lowest",
+	"$visavis_matrix_order_dict_eneg": "Electronegativity",
+	"$visavis_matrix_order_dict_num": "Atomic number",
+	"$visavis_matrix_order_dict_nump": "Periodic number",
+	"$visavis_matrix_order_dict_rcov": "Covalent radii",
+	"$visavis_matrix_order_dict_rea": "Atomic reactivity",
+	"$visavis_matrix_order_dict_rion": "Ionic radii",
+	"$visavis_matrix_order_dict_rmet": "Metallic radii",
+	"$visavis_matrix_order_dict_rpp": "Pseudopotential radii",
+	"$visavis_matrix_order_dict_size": "Atomic size",
+	"$visavis_matrix_order_dict_tmelt": "Melting temperature",
+	"$visavis_upload_title": "Drop a plot from MPDS in JSON here or browse"
 }

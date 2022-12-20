@@ -1,6 +1,9 @@
 {
 	"$mol_lights_toggle_hint": "Toggle lights",
 	"$mol_link_source_hint": "Source code",
+	"$visavis_app_Examples_title": "Examples",
+	"$visavis_app_History_title": "Uploads",
+	"$visavis_app_Upload_hint": "Upload a plot from MPDS in JSON",
 	"$visavis_matrix_Nonformers_hint": "Continuous solid solutions and complete insolubility systems",
 	"$visavis_matrix_Nonformers_label_title": "Non-formers",
 	"$visavis_matrix_Nonformers_title": "Show",
@@ -15,6 +18,5 @@
 	"$visavis_matrix_order_dict_rmet": "Metallic radii",
 	"$visavis_matrix_order_dict_rpp": "Pseudopotential radii",
 	"$visavis_matrix_order_dict_size": "Atomic size",
-	"$visavis_matrix_order_dict_tmelt": "Melting temperature",
-	"$visavis_upload_title": "Drop a plot from MPDS in JSON here or browse"
+	"$visavis_matrix_order_dict_tmelt": "Melting temperature"
 }

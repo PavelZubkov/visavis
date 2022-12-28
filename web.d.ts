@@ -1394,6 +1394,12 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
+    class $mol_icon_delete extends $mol_icon {
+        path(): string;
+    }
+}
+
+declare namespace $ {
     class $mol_list extends $mol_view {
         render_visible_only(): boolean;
         render_over(): number;
@@ -1605,6 +1611,34 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
+    class $mol_store<Data> extends $mol_object2 {
+        data_default?: Data | undefined;
+        constructor(data_default?: Data | undefined);
+        data(next?: Data): NonNullable<Data> | (Data & null);
+        snapshot(next?: string): string;
+        value<Key extends keyof Data>(key: Key, next?: Data[Key]): Data[Key] & {};
+        selection<Key extends keyof Data>(key: Key, next?: number[]): number[];
+        sub<Key extends keyof Data, Lens extends $mol_store<Data[Key]> = $mol_store<NonNullable<Data[Key]>>>(key: Key, lens?: Lens): Lens;
+        reset(): void;
+        active(): boolean;
+    }
+}
+
+declare namespace $ {
+    interface Plot {
+        id: string;
+        type: 'matrix' | string;
+        json: unknown;
+    }
+    export class $visavis_plot extends $mol_store<Plot> {
+        id(next?: string): string;
+        type(): string;
+        json(): {};
+    }
+    export {};
+}
+
+declare namespace $ {
     class $mol_icon_tick extends $mol_icon {
         path(): string;
     }
@@ -1634,7 +1668,7 @@ declare namespace $ {
 
 declare namespace $ {
     class $visavis_matrix extends $mol_book2 {
-        file(): Object;
+        plot(): $visavis_plot;
         size(): number;
         links_value_min(next?: any): number;
         links_value_max(next?: any): number;
@@ -1647,6 +1681,7 @@ declare namespace $ {
         plot_padding(): number;
         axis_width(): number;
         pages(): readonly any[];
+        plot_title(): string;
         Root(): $$.$mol_svg;
         Heatmap_min(): $mol_view;
         heatmap_color(id: any): string;
@@ -1662,8 +1697,8 @@ declare namespace $ {
         Nonformers(): $mol_check_box;
         Nonformers_label(): $mol_labeler;
         order_dict(): {
-            num: string;
             nump: string;
+            num: string;
             size: string;
             rea: string;
             rpp: string;
@@ -1677,6 +1712,88 @@ declare namespace $ {
         Order_label(): $mol_labeler;
         Setup(): $mol_page;
     }
+}
+
+declare namespace $ {
+    type $mol_data_value<Input = any, Output = any> = (val: Input) => Output;
+}
+
+declare namespace $ {
+    type $mol_type_equals<A, B> = (<X>() => X extends A ? 1 : 2) extends (<X>() => X extends B ? 1 : 2) ? unknown : never;
+}
+
+declare namespace $ {
+    type $mol_type_merge<Intersection> = Intersection extends (...a: any[]) => any ? Intersection : Intersection extends new (...a: any[]) => any ? Intersection : Intersection extends object ? $mol_type_merge_object<Intersection> extends Intersection ? unknown extends $mol_type_equals<$mol_type_merge_object<Intersection>, Intersection> ? Intersection : {
+        [Key in keyof Intersection]: $mol_type_merge<Intersection[Key]>;
+    } : Intersection : Intersection;
+    type $mol_type_merge_object<Intersection> = {
+        [Key in keyof Intersection]: Intersection[Key];
+    };
+}
+
+declare namespace $ {
+    type $mol_type_partial_undefined<Val> = $mol_type_merge<Partial<Val> & Pick<Val, {
+        [Field in keyof Val]: undefined extends Val[Field] ? never : Field;
+    }[keyof Val]>>;
+}
+
+declare namespace $ {
+    function $mol_data_setup<Value extends $mol_data_value, Config = never>(value: Value, config: Config): Value & {
+        config: Config;
+        Value: ReturnType<Value>;
+    };
+}
+
+declare namespace $ {
+    function $mol_data_record<Sub extends Record<string, $mol_data_value>>(sub: Sub): ((val: $mol_type_merge<Partial<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }> & Pick<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }, ({ [key in keyof Sub]: Parameters<Sub[key]>[0]; } extends infer T ? { [Field in keyof T]: undefined extends { [key in keyof Sub]: Parameters<Sub[key]>[0]; }[Field] ? never : Field; } : never)[keyof Sub]>>) => Readonly<$mol_type_merge<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }> & Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, ({ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; } extends infer T_1 ? { [Field_1 in keyof T_1]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; } : never)[keyof Sub]>>>) & {
+        config: Sub;
+        Value: Readonly<$mol_type_merge<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }> & Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, ({ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; } extends infer T_2 ? { [Field_1 in keyof T_2]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; } : never)[keyof Sub]>>>;
+    };
+}
+
+declare namespace $ {
+    function $mol_diff_path<Item>(...paths: Item[][]): {
+        prefix: Item[];
+        suffix: Item[][];
+    };
+}
+
+declare namespace $ {
+    class $mol_error_mix extends Error {
+        errors: Error[];
+        constructor(message: string, ...errors: Error[]);
+        toJSON(): string;
+    }
+}
+
+declare namespace $ {
+    class $mol_data_error extends $mol_error_mix {
+    }
+}
+
+declare namespace $ {
+    let $mol_data_string: (val: string) => string;
+}
+
+declare namespace $ {
+    let $mol_data_number: (val: number) => number;
+}
+
+declare namespace $ {
+    function $mol_data_optional<Sub extends $mol_data_value, Fallback extends undefined | (() => ReturnType<Sub>)>(sub: Sub, fallback?: Fallback): ((val: Parameters<Sub>[0] | undefined) => ReturnType<Sub> | (Fallback extends undefined ? undefined : ReturnType<Extract<Fallback, () => any>>)) & {
+        config: {
+            sub: Sub;
+            fallback: Fallback | undefined;
+        };
+        Value: ReturnType<Sub> | (Fallback extends undefined ? undefined : ReturnType<Extract<Fallback, () => any>>);
+    };
+}
+
+declare namespace $ {
+    function $mol_data_array<Sub extends $mol_data_value>(sub: Sub): ((val: readonly Parameters<Sub>[0][]) => readonly ReturnType<Sub>[]) & {
+        config: Sub;
+        Value: readonly ReturnType<Sub>[];
+    };
 }
 
 declare namespace $ {
@@ -1719,37 +1836,6 @@ declare namespace $.$$ {
 }
 
 declare namespace $.$$ {
-    type Matrix_node = {
-        name: string;
-        num: number;
-        nump: number;
-        size: number;
-        rea: number;
-        rpp: number;
-        rion: number;
-        rcov: number;
-        rmet: number;
-        tmelt: number;
-        eneg: number;
-        count?: number;
-    };
-    type Matrix_link = {
-        source: number;
-        target: number;
-        value: number;
-        cmt: string;
-        cmp?: number;
-    };
-    type Matrix = {
-        error: null | Error;
-        payload: {
-            nodes: Matrix_node[];
-            links: Matrix_link[];
-            fixel: null;
-        };
-        answerto: string;
-        use_visavis_type: 'matrix';
-    };
     type Matrix_cell = {
         x: number;
         y: number;
@@ -1759,12 +1845,56 @@ declare namespace $.$$ {
         nonformer: boolean;
     };
     export class $visavis_matrix extends $.$visavis_matrix {
-        data(): Matrix;
-        nodes(): Matrix_node[];
-        links(): Matrix_link[];
+        data(): Readonly<{
+            payload: Readonly<{
+                nodes: readonly Readonly<{
+                    name: string;
+                    num: number;
+                    nump: number;
+                    size: number;
+                    rea: number;
+                    rpp: number;
+                    rion: number;
+                    rcov: number;
+                    rmet: number;
+                    tmelt: number;
+                    eneg: number;
+                    count?: number | undefined;
+                }>[];
+                links: readonly Readonly<{
+                    source: number;
+                    target: number;
+                    value: number;
+                    cmt: string;
+                    cmp?: number | undefined;
+                }>[];
+            }>;
+        }>;
+        nodes(): readonly Readonly<{
+            name: string;
+            num: number;
+            nump: number;
+            size: number;
+            rea: number;
+            rpp: number;
+            rion: number;
+            rcov: number;
+            rmet: number;
+            tmelt: number;
+            eneg: number;
+            count?: number | undefined;
+        }>[];
+        links(): Readonly<{
+            source: number;
+            target: number;
+            value: number;
+            cmt: string;
+            cmp?: number | undefined;
+        }>[];
         links_value_min(): number;
         links_value_max(): number;
         heatmap(): boolean;
+        plot_title(): string;
         plot_body(): ($mol_scroll | $mol_svg)[];
         order(): any;
         matrix(): Matrix_cell[][];
@@ -1792,10 +1922,14 @@ declare namespace $ {
         plugins(): readonly any[];
         pages(): readonly any[];
         Theme(): $$.$mol_theme_auto;
-        files_open(next?: any): any;
+        files_read(next?: any): any;
         Upload(): $mol_button_open;
-        file_title(id: any): string;
-        File(id: any): $$.$mol_link;
+        plot_id(id: any): string;
+        Plot_link(id: any): $$.$mol_link;
+        history_drop(id: any, next?: any): any;
+        Plot_drop_icon(id: any): $mol_icon_delete;
+        Plot_drop(id: any): $mol_button_minor;
+        Plot(id: any): $mol_view;
         history_rows(): readonly any[];
         History(): $$.$mol_list;
         example_title(id: any): string;
@@ -1806,10 +1940,25 @@ declare namespace $ {
         Source(): $mol_link_source;
         Lights(): $$.$mol_lights_toggle;
         Menu(): $mol_page;
-        file_current_title(): string;
-        file_current(): Object;
+        plot(id: any): $visavis_plot;
         Matrix(id: any): $$.$visavis_matrix;
     }
+}
+
+declare namespace $ {
+    type $mol_blob = Blob;
+    let $mol_blob: {
+        new (blobParts?: BlobPart[] | undefined, options?: BlobPropertyBag | undefined): Blob;
+        prototype: Blob;
+    };
+}
+
+declare namespace $ {
+    function $mol_blob_text(blob: $mol_blob): Promise<string>;
+}
+
+declare namespace $ {
+    function $mol_blob_json(blob: $mol_blob): Promise<any>;
 }
 
 declare namespace $.$$ {
@@ -1817,19 +1966,16 @@ declare namespace $.$$ {
 
 declare namespace $.$$ {
     class $visavis_app extends $.$visavis_app {
-        load_file(blob: Blob): Promise<string>;
-        files_open(next: readonly File[]): null | undefined;
-        history(next?: {
-            title: string;
-            data: any;
-        }[]): {
-            title: string;
-            data: any;
-        }[];
-        file_title(id: number): string;
-        history_rows(): $mol_link[];
-        file_current_title(): string;
-        file_current(): any;
+        files_read(next: readonly File[]): void;
+        history_add(plot: $visavis_plot): void;
+        history_drop(id: string): void;
+        history_plots(next?: string[]): string[];
+        history_plot(id: string, next?: $visavis_plot | null): $visavis_plot | null;
+        history_rows(): $mol_view[];
+        plot_id(id: string): string;
+        plot_opened(next?: string | null): string;
+        Plot_opened(): readonly any[];
+        plot(plot: $visavis_plot): $visavis_plot;
         pages(): any[];
     }
 }

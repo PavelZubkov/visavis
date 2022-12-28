@@ -118,6 +118,8 @@ $mol_link $mol_view
 		^
 		click?event <=> click?event <=> event_click?event null
 
+$mol_icon_delete $mol_icon path \M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19C6,20.1 6.9,21 8,21H16C17.1,21 18,20.1 18,19V7H6V19Z
+
 $mol_list $mol_view
 	render_visible_only true
 	render_over 0
@@ -221,7 +223,7 @@ $mol_labeler $mol_list
 			sub <= content /
 
 $visavis_matrix $mol_book2
-	file Object
+	plot $visavis_plot
 	size 0
 	links_value_min? 0
 	links_value_max? 0
@@ -254,7 +256,7 @@ $visavis_matrix $mol_book2
 	axis_width 24
 	pages /
 		<= Plot $mol_page
-			title <= title
+			title <= plot_title \
 			body <= plot_body /
 				<= Root $mol_svg
 				<= Side_right $mol_scroll
@@ -271,17 +273,17 @@ $visavis_matrix $mol_book2
 			body /
 				<= Nonformers_label $mol_labeler
 					title @ \Non-formers
-					content / <= Nonformers $mol_check_box
+					Content <= Nonformers $mol_check_box
 						hint @ \Continuous solid solutions and complete insolubility systems
 						title @ \Show
 						checked? <=> nonformers? false
 				<= Order_label $mol_labeler
 					title @ \Sort by
-					content / <= Order_switch $mol_switch
+					Content <= Order_switch $mol_switch
 						value? <=> order_current?
 						options <= order_dict *
-							num @ \Atomic number
 							nump @ \Periodic number
+							num @ \Atomic number
 							size @ \Atomic size
 							rea @ \Atomic reactivity
 							rpp @ \Pseudopotential radii
@@ -301,16 +303,20 @@ $visavis_app $mol_book2
 				<= Upload $mol_button_open
 					hint @ \Upload a plot from MPDS in JSON
 					accept \application/json
-					files? <=> files_open? null
+					files? <=> files_read? null
 			body /
 				<= Deck $mol_deck
 					items /
 						<= History $mol_list
 							title @ \Uploads
 							rows <= history_rows /
-								<= File*0 $mol_link
-									arg * file <= file_title* \
-									title <= file_title*
+								<= Plot*0 $mol_view sub /
+									<= Plot_link* $mol_link
+										arg * file <= plot_id* \
+										title <= plot_id*
+									<= Plot_drop* $mol_button_minor
+										click? <=> history_drop*? null
+										sub / <= Plot_drop_icon* $mol_icon_delete
 						<= Examples $mol_list
 							title @ \Examples
 							rows <= example_rows /
@@ -319,8 +325,7 @@ $visavis_app $mol_book2
 									title <= example_title*
 			foot /
 				<= Source $mol_link_source
-					uri \https://github.com/PavelZubkov/visavis
+					uri \https://github.com/mpds-io/visavis
 				<= Lights $mol_lights_toggle
-		<= Matrix*title $visavis_matrix
-			title <= file_current_title \
-			file <= file_current Object
+		<= Matrix*plot $visavis_matrix
+			plot <= plot* $visavis_plot

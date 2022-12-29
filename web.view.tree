@@ -50,6 +50,8 @@ $mol_button_typed $mol_button
 	minimal_height 40
 	minimal_width 40
 
+$mol_button_minor $mol_button_typed
+
 $mol_svg $mol_view
 	dom_name \svg
 	dom_name_space \http://www.w3.org/2000/svg
@@ -78,8 +80,6 @@ $mol_icon $mol_svg_root
 	sub /
 		<= Path $mol_svg_path
 			geometry <= path \
-
-$mol_button_minor $mol_button_typed
 
 $mol_icon_upload $mol_icon path \M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z
 

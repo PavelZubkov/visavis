@@ -2853,6 +2853,7 @@ declare namespace $ {
         triangle(): {
             datamock: readonly any[];
             layout: {
+                hovermode: string;
                 font: {
                     size: number;
                     color: string;
@@ -2899,6 +2900,7 @@ declare namespace $ {
         rectangle(): {
             datamock: readonly any[];
             layout: {
+                hovermode: string;
                 font: {
                     size: number;
                     color: string;
@@ -2975,6 +2977,11 @@ declare namespace $ {
             };
         };
         annotation_textangle(id: any): number;
+        plot_options(): {
+            displaylogo: boolean;
+            displayModeBar: boolean;
+            staticPlot: boolean;
+        };
         pages(): readonly any[];
         json_title_a(): string;
         json_title_b(): string;
@@ -2987,6 +2994,9 @@ declare namespace $ {
         json_temp(): readonly any[];
         data_demo(): boolean;
         plot_title(): string;
+        label(next?: any): string;
+        Label(): $mol_view;
+        mousemove(): any;
         Root(): $mol_view;
         draw(): any;
         Plot(): $mol_page;
@@ -3009,6 +3019,9 @@ declare namespace $ {
 
 declare namespace $.$$ {
     const Label: (val: any) => [string, number[], number | null];
+    export function inside_triangle(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): boolean;
+    export function cartesian_to_ternary(x: number, y: number): number[];
+    export function fix_comp_impossible(comp_range: any, obj_left: any, obj_right: any): any;
     export class $visavis_phase extends $.$visavis_phase {
         plot_title(): string;
         json(): Readonly<{
@@ -3068,9 +3081,18 @@ declare namespace $.$$ {
         })[];
         annotation_textangle(label: ReturnType<typeof Label>): 0 | -65;
         annotations(): any[];
-        draw(): any;
+        mouseover(): void;
+        mouseout(): void;
+        click(): void;
+        mousemove(): void;
+        subscribe_events(): void;
+        draw(): void;
+        pd_fix_triangle(): void;
     }
     export {};
+}
+
+declare namespace $ {
 }
 
 declare namespace $.$$ {

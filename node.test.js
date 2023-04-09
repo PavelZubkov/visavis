@@ -9114,6 +9114,7 @@ var $;
                     }
                 ],
                 layout: {
+                    hovermode: "closest",
                     font: {
                         size: 20,
                         color: "#333",
@@ -9192,6 +9193,7 @@ var $;
                     }
                 ],
                 layout: {
+                    hovermode: "closest",
                     font: {
                         size: 16,
                         color: "#333",
@@ -9300,6 +9302,13 @@ var $;
         annotation_textangle(id) {
             return 0;
         }
+        plot_options() {
+            return {
+                displaylogo: false,
+                displayModeBar: false,
+                staticPlot: false
+            };
+        }
         pages() {
             return [
                 this.Plot()
@@ -9338,8 +9347,27 @@ var $;
         plot_title() {
             return "";
         }
+        label(next) {
+            if (next !== undefined)
+                return next;
+            return "";
+        }
+        Label() {
+            const obj = new this.$.$mol_view();
+            obj.sub = () => [
+                this.label()
+            ];
+            return obj;
+        }
+        mousemove() {
+            return null;
+        }
         Root() {
             const obj = new this.$.$mol_view();
+            obj.dom_name = () => "div";
+            obj.event = () => ({
+                mousemove: this.mousemove()
+            });
             return obj;
         }
         draw() {
@@ -9349,6 +9377,7 @@ var $;
             const obj = new this.$.$mol_page();
             obj.title = () => this.plot_title();
             obj.body = () => [
+                this.Label(),
                 this.Root()
             ];
             obj.auto = () => this.draw();
@@ -9358,6 +9387,12 @@ var $;
     __decorate([
         $mol_mem
     ], $visavis_phase.prototype, "plot", null);
+    __decorate([
+        $mol_mem
+    ], $visavis_phase.prototype, "label", null);
+    __decorate([
+        $mol_mem
+    ], $visavis_phase.prototype, "Label", null);
     __decorate([
         $mol_mem
     ], $visavis_phase.prototype, "Root", null);
@@ -9457,6 +9492,94 @@ var $;
             object_type: $mol_data_string,
             use_visavis_type: $mol_data_const('pd'),
         });
+        function get_rect_pd_compound(comp, obj_left, obj_right) {
+            const els = Object.keys(obj_left).sort();
+            let formula = '';
+            let coeff = 0;
+            els.forEach(function (el) {
+                if (obj_right[el] == obj_left[el])
+                    formula += el + ' × ' + obj_left[el].toFixed(2) + ', ';
+                else if (obj_right[el] > obj_left[el]) {
+                    coeff = obj_left[el] + comp * (obj_right[el] - obj_left[el]);
+                    coeff = Math.round(coeff * 100) / 100;
+                    if (!coeff)
+                        return;
+                    formula += el + ' × ' + coeff.toFixed(2) + ', ';
+                }
+                else {
+                    coeff = obj_left[el] - (comp * (obj_left[el] - obj_right[el]));
+                    coeff = Math.round(coeff * 100) / 100;
+                    if (!coeff)
+                        return;
+                    formula += el + ' × ' + coeff.toFixed(2) + ', ';
+                }
+            });
+            return formula.substr(0, formula.length - 2);
+        }
+        function get_tri_pd_compound(a, b, c, obj_a, obj_b, obj_c) {
+            const els = Object.keys(obj_a).sort();
+            let formula = '';
+            let coeff = 0;
+            els.forEach(function (el) {
+                coeff = Math.round((obj_a[el] * a + obj_b[el] * b + obj_c[el] * c) * 100) / 100;
+                if (!coeff)
+                    return;
+                formula += el + ' &times; ' + coeff.toFixed(2) + ', ';
+            });
+            return formula.substr(0, formula.length - 2);
+        }
+        function inside_triangle(x, y, x1, y1, x2, y2, x3, y3) {
+            function fAB(x, y, x1, y1, x2, y2, x3, y3) {
+                return (y - y1) * (x2 - x1) - (x - x1) * (y2 - y1);
+            }
+            function fBC(x, y, x1, y1, x2, y2, x3, y3) {
+                return (y - y2) * (x3 - x2) - (x - x2) * (y3 - y2);
+            }
+            function fCA(x, y, x1, y1, x2, y2, x3, y3) {
+                return (y - y3) * (x1 - x3) - (x - x3) * (y1 - y3);
+            }
+            if (fAB(x, y, x1, y1, x2, y2, x3, y3) * fBC(x, y, x1, y1, x2, y2, x3, y3) > 0 && fBC(x, y, x1, y1, x2, y2, x3, y3) * fCA(x, y, x1, y1, x2, y2, x3, y3) > 0)
+                return true;
+            else
+                return false;
+        }
+        $$.inside_triangle = inside_triangle;
+        function cartesian_to_ternary(x, y) {
+            const b = y / (Math.sqrt(3) / 2), a = 1 - (x + (y / Math.sqrt(3))), c = 1 - a - b;
+            return [a, b, c];
+        }
+        $$.cartesian_to_ternary = cartesian_to_ternary;
+        function fix_comp_impossible(comp_range, obj_left, obj_right) {
+            if (comp_range[1] - comp_range[0] == 100)
+                return false;
+            const els = Object.keys(obj_left);
+            let count = 0;
+            let fixed = {};
+            if (els.length > 2)
+                return false;
+            for (const el in obj_left) {
+                if ((obj_right[el] == 0 && obj_left[el] == 1) || (obj_left[el] == 0 && obj_right[el] == 1))
+                    count++;
+            }
+            if (count == els.length) {
+                fixed = { comp_start: obj_left, comp_end: obj_right };
+                if (fixed.comp_start[els[0]] == 0) {
+                    fixed.comp_start[els[0]] = comp_range[0] / 100;
+                    fixed.comp_start[els[1]] = 1 - (comp_range[0] / 100);
+                    fixed.comp_end[els[0]] = comp_range[1] / 100;
+                    fixed.comp_end[els[1]] = 1 - (comp_range[1] / 100);
+                }
+                else {
+                    fixed.comp_start[els[0]] = 1 - (comp_range[0] / 100);
+                    fixed.comp_start[els[1]] = comp_range[0] / 100;
+                    fixed.comp_end[els[0]] = 1 - (comp_range[1] / 100);
+                    fixed.comp_end[els[1]] = comp_range[1] / 100;
+                }
+                return fixed;
+            }
+            return false;
+        }
+        $$.fix_comp_impossible = fix_comp_impossible;
         class $visavis_phase extends $.$visavis_phase {
             plot_title() {
                 return this.plot().id();
@@ -9518,9 +9641,113 @@ var $;
                     ...this.json().naxes === 2 ? this.rectangle_annotations() : [],
                 ];
             }
+            mouseover() {
+                const that = $lib_d3.all().select(this);
+                console.log(that);
+                const idx = that.attr('data-index');
+                that.attr('data-state', that.style('fill'));
+                that.style({ 'cursor': 'pointer', 'fill': '#3e3f95' });
+            }
+            mouseout() { }
+            click() { }
+            mousemove() { }
+            subscribe_events() {
+                const d3 = $lib_d3.all();
+                console.log('is trinagle', this.is_triangle());
+                if (this.is_triangle())
+                    this.pd_fix_triangle();
+                if (this.json().diatype && this.json().diatype.indexOf('projection') !== -1)
+                    return;
+                const json = this.json();
+                const is_triangle = this.is_triangle();
+                const figures = d3.selectAll('[visavis_phase_root] .shapelayer path');
+                figures.on('mouseover', function () {
+                    const that = d3.select(this);
+                    let idx = that.attr('data-index');
+                    if (is_triangle) {
+                        if (idx == 0)
+                            return false;
+                        idx--;
+                    }
+                    that.attr('data-state', that.style('fill'));
+                    that.style('cursor', 'pointer');
+                    that.style('fill', '#3e3f95');
+                    const reflabel = json.shapes[idx]?.reflabel;
+                    if (reflabel !== undefined && json.labels[reflabel] !== undefined) {
+                        d3.select(`g.annotation[data-index="'${reflabel}'"]`).select('text').style('fill', '#f30');
+                    }
+                });
+                figures.on('mouseout', function () {
+                    const that = d3.select(this);
+                    const state = that.attr('data-state');
+                    if (state) {
+                        that.style('fill', state);
+                        that.style('cursor', 'default');
+                        d3.selectAll('[visavis_phase_root] g.annotation').select('text').style('fill', '#000');
+                    }
+                });
+                const canvas = this.Root().dom_node();
+                const fixed = fix_comp_impossible(json.comp_range, json.comp_start, json.comp_end);
+                const comp_start = fixed?.comp_start ?? json.comp_start;
+                const comp_end = fixed?.comp_end ?? json.comp_end;
+                const xaxis = canvas._fullLayout.xaxis;
+                const yaxis = canvas._fullLayout.yaxis;
+                const margin_l = canvas._fullLayout.margin.l;
+                const margin_t = canvas._fullLayout.margin.t;
+                const self = this;
+                canvas.addEventListener('mousemove', $mol_wire_async((evt) => {
+                    const comp = xaxis.p2c(evt.layerX - margin_l);
+                    const temp = parseInt(yaxis.p2c(evt.layerY - margin_t));
+                    if (comp > json.comp_range[0] && comp < json.comp_range[1] && temp > json.temp[0] && temp < json.temp[1]) {
+                        const label = get_rect_pd_compound((comp - json.comp_range[0]) / (json.comp_range[1] - json.comp_range[0]), comp_start, comp_end) + ' at T = ' + temp + ' °C';
+                        self.label(label);
+                    }
+                    else {
+                        self.label('');
+                    }
+                }));
+            }
             draw() {
-                this.Root().view_rect();
-                return $lib_plotly.all().react(this.Root().dom_node(), this.is_triangle() ? this.triangle().datamock : this.rectangle().datamock, this.is_triangle() ? this.triangle().layout : this.rectangle().layout, { displaylogo: false, displayModeBar: false, staticPlot: false });
+                const { datamock, layout } = this.is_triangle() ? this.triangle() : this.rectangle();
+                const promise = $lib_plotly.all().react(this.Root().dom_node(), datamock, layout, this.plot_options());
+                promise.then(() => this.subscribe_events());
+            }
+            pd_fix_triangle() {
+                const d3 = $lib_d3.all();
+                function make_absolute_context(element, root) {
+                    return function (x, y) {
+                        var offset = root.getBoundingClientRect();
+                        var matrix = element.getScreenCTM();
+                        return {
+                            x: (matrix.a * x) + (matrix.c * y) + matrix.e - offset.left,
+                            y: (matrix.b * x) + (matrix.d * y) + matrix.f - offset.top
+                        };
+                    };
+                }
+                function get_absolute_coords(el, ref) {
+                    const fn = make_absolute_context(el, ref);
+                    const b = el.getBBox();
+                    return fn(b.x, b.y);
+                }
+                const svgroot = d3.select("[visavis_phase_root] svg.main-svg")[0][0];
+                let graph_node = d3.select("[visavis_phase_root] g.toplevel.plotbg")[0][0];
+                const graph_coords = get_absolute_coords(graph_node, svgroot);
+                const svg_el = d3.select("[visavis_phase_root] g.layer-above");
+                let svg_node = svg_el[0][0];
+                graph_node = graph_node.getBoundingClientRect();
+                svg_node = svg_node.getBoundingClientRect();
+                const scaleX = graph_node.width / svg_node.width;
+                const scaleY = graph_node.height / svg_node.height;
+                const centerX = graph_coords.x + graph_node.width / 2;
+                const centerY = graph_coords.y + graph_node.height;
+                const origdims = [];
+                d3.selectAll("[visavis_phase_root] text.annotation-text").each(function () {
+                    origdims.push(parseInt(this.getBoundingClientRect().left));
+                });
+                svg_el.attr("transform", "translate(" + (-centerX * (scaleX - 1)) + ", " + (-centerY * (scaleY - 1)) + ") scale(" + scaleX + ", " + scaleY + ")");
+                d3.selectAll("[visavis_phase_root] g.annotation").each(function (d, i) {
+                    d3.select(this).attr("transform", "translate(" + (-centerX * (scaleX - 1)) + ", " + (-centerY * (scaleY - 1)) + ") scale(" + scaleX + ", " + scaleY + ") translate(" + (-origdims[i] / 1.25) + ", 0) scale(1.75, 1)");
+                });
             }
         }
         __decorate([
@@ -9529,6 +9756,9 @@ var $;
         __decorate([
             $mol_mem
         ], $visavis_phase.prototype, "annotations", null);
+        __decorate([
+            $mol_action
+        ], $visavis_phase.prototype, "subscribe_events", null);
         __decorate([
             $mol_mem
         ], $visavis_phase.prototype, "draw", null);
@@ -9540,6 +9770,13 @@ var $;
 "use strict";
 var $;
 (function ($) {
+    $mol_style_attach("visavis/phase/phase.view.css", "path{pointer-events:painted;}\ng{pointer-events:painted;}\n");
+})($ || ($ = {}));
+//visavis/phase/-css/phase.view.css.ts
+;
+"use strict";
+var $;
+(function ($) {
     var $$;
     (function ($$) {
         const { per, rem, px } = $mol_style_unit;
@@ -9547,7 +9784,7 @@ var $;
         $mol_style_define($visavis_phase, {
             Plot: {
                 flex: {
-                    basis: calc(`${per(100)} - ${rem(50)}`),
+                    basis: calc(`${per(100)} - ${rem(25)}`),
                     shrink: 0,
                 },
             },

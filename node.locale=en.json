@@ -23,6 +23,7 @@
 	"$visavis_cube_order_dict_rpp": "Pseudopotential radii",
 	"$visavis_cube_order_dict_size": "Atomic size",
 	"$visavis_cube_order_dict_tmelt": "Melting temperature",
+	"$visavis_discovery_Setup_title": "Setup",
 	"$visavis_matrix_Nonformers_hint": "Continuous solid solutions and complete insolubility systems",
 	"$visavis_matrix_Nonformers_label_title": "Non-formers",
 	"$visavis_matrix_Nonformers_title": "Show",

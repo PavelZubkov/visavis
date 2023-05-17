@@ -116,6 +116,7 @@ declare namespace $ {
 
 declare namespace $ {
     interface $mol_wire_sub extends $mol_wire_pub {
+        temp: boolean;
         track_on(): $mol_wire_sub | null;
         track_next(pub?: $mol_wire_pub): $mol_wire_pub | null;
         pub_off(pub_pos: number): void;
@@ -127,6 +128,7 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    let $mol_wire_auto_sub: $mol_wire_sub | null;
     function $mol_wire_auto(next?: $mol_wire_sub | null): $mol_wire_sub | null;
     const $mol_wire_affected: (number | $mol_wire_sub)[];
 }
@@ -163,6 +165,7 @@ declare namespace $ {
     class $mol_wire_pub_sub extends $mol_wire_pub implements $mol_wire_sub {
         protected pub_from: number;
         protected cursor: $mol_wire_cursor;
+        get temp(): boolean;
         get pub_list(): $mol_wire_pub[];
         track_on(): $mol_wire_sub | null;
         promote(): void;
@@ -250,7 +253,8 @@ declare namespace $ {
 
 declare namespace $ {
     class $mol_wire_task<Host, Args extends readonly unknown[], Result> extends $mol_wire_fiber<Host, Args, Result> {
-        static getter<Host, Args extends readonly unknown[], Result>(task: (this: Host, ...args: Args) => Result): (host: Host, args: Args) => $mol_wire_task<Host, [...Args], Result>;
+        static getter<Host, Args extends readonly unknown[], Result>(task: (this: Host, ...args: Args) => Result): (host: Host, args: Args) => $mol_wire_task<Host, Args, Result>;
+        get temp(): boolean;
         complete(): void;
         put(next: Result | Error | Promise<Result | Error>): Error | Result | Promise<Error | Result>;
     }
@@ -519,7 +523,7 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    function $mol_wire_probe<Value>(task: () => Value, next?: Value): Value | undefined;
+    function $mol_wire_probe<Value>(task: () => Value, def?: Value): Value | undefined;
 }
 
 declare namespace $ {
@@ -603,34 +607,34 @@ declare namespace $ {
         readonly literal: Literal;
         constructor(value: number, literal: Literal);
         postfix(): Literal;
-        static per(value: number): $mol_style_unit<"%">;
-        static px(value: number): $mol_style_unit<"px">;
-        static mm(value: number): $mol_style_unit<"mm">;
-        static cm(value: number): $mol_style_unit<"cm">;
-        static Q(value: number): $mol_style_unit<"Q">;
-        static in(value: number): $mol_style_unit<"in">;
-        static pc(value: number): $mol_style_unit<"pc">;
-        static pt(value: number): $mol_style_unit<"pt">;
-        static cap(value: number): $mol_style_unit<"cap">;
-        static ch(value: number): $mol_style_unit<"ch">;
-        static em(value: number): $mol_style_unit<"em">;
-        static rem(value: number): $mol_style_unit<"rem">;
-        static ex(value: number): $mol_style_unit<"ex">;
-        static ic(value: number): $mol_style_unit<"ic">;
-        static lh(value: number): $mol_style_unit<"lh">;
-        static rlh(value: number): $mol_style_unit<"rlh">;
-        static vh(value: number): $mol_style_unit<"vh">;
-        static vw(value: number): $mol_style_unit<"vw">;
-        static vi(value: number): $mol_style_unit<"vi">;
-        static vb(value: number): $mol_style_unit<"vb">;
-        static vmin(value: number): $mol_style_unit<"vmin">;
-        static vmax(value: number): $mol_style_unit<"vmax">;
-        static deg(value: number): $mol_style_unit<"deg">;
-        static rad(value: number): $mol_style_unit<"rad">;
-        static grad(value: number): $mol_style_unit<"grad">;
-        static turn(value: number): $mol_style_unit<"turn">;
-        static s(value: number): $mol_style_unit<"s">;
-        static ms(value: number): $mol_style_unit<"ms">;
+        static per(value: number): `${number}%`;
+        static px(value: number): `${number}px`;
+        static mm(value: number): `${number}mm`;
+        static cm(value: number): `${number}cm`;
+        static Q(value: number): `${number}Q`;
+        static in(value: number): `${number}in`;
+        static pc(value: number): `${number}pc`;
+        static pt(value: number): `${number}pt`;
+        static cap(value: number): `${number}cap`;
+        static ch(value: number): `${number}ch`;
+        static em(value: number): `${number}em`;
+        static rem(value: number): `${number}rem`;
+        static ex(value: number): `${number}ex`;
+        static ic(value: number): `${number}ic`;
+        static lh(value: number): `${number}lh`;
+        static rlh(value: number): `${number}rlh`;
+        static vh(value: number): `${number}vh`;
+        static vw(value: number): `${number}vw`;
+        static vi(value: number): `${number}vi`;
+        static vb(value: number): `${number}vb`;
+        static vmin(value: number): `${number}vmin`;
+        static vmax(value: number): `${number}vmax`;
+        static deg(value: number): `${number}deg`;
+        static rad(value: number): `${number}rad`;
+        static grad(value: number): `${number}grad`;
+        static turn(value: number): `${number}turn`;
+        static s(value: number): `${number}s`;
+        static ms(value: number): `${number}ms`;
     }
 }
 
@@ -644,7 +648,7 @@ declare namespace $ {
         static calc<Value>(value: Value): $mol_style_func<"calc", Value>;
         static vary<Name extends string>(name: Name): $mol_style_func<"var", Name>;
         static url<Href extends string>(href: Href): $mol_style_func<"url", string>;
-        static hsla(hue: number, saturation: number, lightness: number, alpha: number): $mol_style_func<"hsla", (number | $mol_style_unit<"%">)[]>;
+        static hsla(hue: number, saturation: number, lightness: number, alpha: number): $mol_style_func<"hsla", (number | `${number}%`)[]>;
         static clamp(min: $mol_style_unit<any>, mid: $mol_style_unit<any>, max: $mol_style_unit<any>): $mol_style_func<"clamp", $mol_style_unit<any>[]>;
         static rgba(red: number, green: number, blue: number, alpha: number): $mol_style_func<"rgba", number[]>;
         static scale(zoom: number): $mol_style_func<"scale", number[]>;
@@ -770,12 +774,8 @@ declare namespace $ {
     class $mol_scroll extends $mol_view {
         scroll_top(val?: any): number;
         scroll_left(val?: any): number;
-        field(): {
-            tabIndex: number;
-        };
-        event(): {
-            scroll: (event?: any) => any;
-        };
+        field(): Record<string, any>;
+        event(): Record<string, any>;
         tabindex(): number;
         event_scroll(event?: any): any;
     }
@@ -812,7 +812,7 @@ declare namespace $ {
     export type $mol_style_properties = Partial<$mol_type_override<CSSStyleDeclaration, Overrides>>;
     type Common = 'inherit' | 'initial' | 'unset' | 'revert' | 'revert-layer' | $mol_style_func<'var'>;
     type Color = 'aliceblue' | 'antiquewhite' | 'aqua' | 'aquamarine' | 'azure' | 'beige' | 'bisque' | 'black' | 'blanchedalmond' | 'blue' | 'blueviolet' | 'brown' | 'burlywood' | 'cadetblue' | 'chartreuse' | 'chocolate' | 'coral' | 'cornflowerblue' | 'cornsilk' | 'crimson' | 'cyan' | 'darkblue' | 'darkcyan' | 'darkgoldenrod' | 'darkgray' | 'darkgreen' | 'darkgrey' | 'darkkhaki' | 'darkmagenta' | 'darkolivegreen' | 'darkorange' | 'darkorchid' | 'darkred' | 'darksalmon' | 'darkseagreen' | 'darkslateblue' | 'darkslategrey' | 'darkturquoise' | 'darkviolet' | 'deeppink' | 'deepskyblue' | 'dimgray' | 'dimgrey' | 'dodgerblue' | 'firebrick' | 'floralwhite' | 'forestgreen' | 'fuchsia' | 'gainsboro' | 'ghostwhite' | 'gold' | 'goldenrod' | 'gray' | 'green' | 'greenyellow' | 'grey' | 'honeydew' | 'hotpink' | 'indianred' | 'indigo' | 'ivory' | 'khaki' | 'lavender' | 'lavenderblush' | 'lawngreen' | 'lemonchiffon' | 'lightblue' | 'lightcoral' | 'lightcyan' | 'lightgoldenrodyellow' | 'lightgray' | 'lightgreen' | 'lightgrey' | 'lightpink' | 'lightsalmon' | 'lightseagreen' | 'lightskyblue' | 'lightslategray' | 'lightslategrey' | 'lightsteelblue' | 'lightyellow' | 'lime' | 'limegreen' | 'linen' | 'magenta' | 'maroon' | 'mediumaquamarine' | 'mediumblue' | 'mediumorchid' | 'mediumpurple' | 'mediumseagreen' | 'mediumslateblue' | 'mediumspringgreen' | 'mediumturquoise' | 'mediumvioletred' | 'midnightblue' | 'mintcream' | 'mistyrose' | 'moccasin' | 'navajowhite' | 'navy' | 'oldlace' | 'olive' | 'olivedrab' | 'orange' | 'orangered' | 'orchid' | 'palegoldenrod' | 'palegreen' | 'paleturquoise' | 'palevioletred' | 'papayawhip' | 'peachpuff' | 'peru' | 'pink' | 'plum' | 'powderblue' | 'purple' | 'rebeccapurple' | 'red' | 'rosybrown' | 'royalblue' | 'saddlebrown' | 'salmon' | 'sandybrown' | 'seagreen' | 'seashell' | 'sienna' | 'silver' | 'skyblue' | 'slateblue' | 'slategray' | 'slategrey' | 'snow' | 'springgreen' | 'steelblue' | 'tan' | 'teal' | 'thistle' | 'tomato' | 'turquoise' | 'violet' | 'wheat' | 'white' | 'whitesmoke' | 'yellow' | 'yellowgreen' | 'transparent' | 'currentcolor' | $mol_style_func<'hsla' | 'rgba' | 'var'> | `#${string}`;
-    type Length = 0 | $mol_style_unit<$mol_style_unit_length> | $mol_style_func<'calc' | 'var' | 'clamp'>;
+    type Length = 0 | `${number}${$mol_style_unit_length}` | $mol_style_func<'calc' | 'var' | 'clamp'>;
     type Size = 'auto' | 'max-content' | 'min-content' | 'fit-content' | Length | Common;
     type Directions<Value> = Value | readonly [Value, Value] | {
         top?: Value;
@@ -904,6 +904,7 @@ declare namespace $ {
         };
         zIndex: number | Common;
         opacity: number | Common;
+        aspectRatio: number | Common;
     }
     export {};
 }
@@ -992,12 +993,8 @@ declare namespace $ {
 
 declare namespace $ {
     class $mol_speck extends $mol_view {
-        attr(): {
-            mol_theme: string;
-        };
-        style(): {
-            minHeight: string;
-        };
+        attr(): Record<string, any>;
+        style(): Record<string, any>;
         sub(): readonly any[];
         theme(): string;
         value(): any;
@@ -1025,17 +1022,8 @@ declare namespace $ {
         enabled(): boolean;
         click(event?: any): any;
         event_click(event?: any): any;
-        event(): {
-            click: (event?: any) => any;
-            dblclick: (event?: any) => any;
-            keydown: (event?: any) => any;
-        };
-        attr(): {
-            disabled: boolean;
-            role: string;
-            tabindex: number;
-            title: string;
-        };
+        event(): Record<string, any>;
+        attr(): Record<string, any>;
         sub(): readonly $mol_view_content[];
         Speck(): $mol_speck;
         event_activate(event?: any): any;
@@ -1194,7 +1182,7 @@ declare namespace $ {
         dom_name_space(): string;
         font_size(): number;
         font_family(): string;
-        style_size(): {};
+        style_size(): Record<string, any>;
     }
 }
 
@@ -1207,7 +1195,7 @@ declare namespace $ {
 
 declare namespace $.$$ {
     class $mol_svg extends $.$mol_svg {
-        computed_style(): CSSStyleDeclaration;
+        computed_style(): Record<string, any>;
         font_size(): number;
         font_family(): any;
     }
@@ -1216,10 +1204,7 @@ declare namespace $.$$ {
 declare namespace $ {
     class $mol_svg_root extends $mol_svg {
         dom_name(): string;
-        attr(): {
-            viewBox: string;
-            preserveAspectRatio: string;
-        };
+        attr(): Record<string, any>;
         view_box(): string;
         aspect(): string;
     }
@@ -1231,9 +1216,7 @@ declare namespace $ {
 declare namespace $ {
     class $mol_svg_path extends $mol_svg {
         dom_name(): string;
-        attr(): {
-            d: string;
-        };
+        attr(): Record<string, any>;
         geometry(): string;
     }
 }
@@ -1270,14 +1253,8 @@ declare namespace $ {
     class $mol_button_open_native extends $mol_view {
         dom_name(): string;
         files(next?: any): readonly any[];
-        attr(): {
-            type: string;
-            accept: string;
-            multiple: boolean;
-        };
-        event(): {
-            change: (next?: any) => any;
-        };
+        attr(): Record<string, any>;
+        event(): Record<string, any>;
         accept(): string;
         multiple(): boolean;
         picked(next?: any): any;
@@ -1386,74 +1363,6 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    type $mol_data_value<Input = any, Output = any> = (val: Input) => Output;
-}
-
-declare namespace $ {
-    type $mol_type_equals<A, B> = (<X>() => X extends A ? 1 : 2) extends (<X>() => X extends B ? 1 : 2) ? unknown : never;
-}
-
-declare namespace $ {
-    type $mol_type_merge<Intersection> = Intersection extends (...a: any[]) => any ? Intersection : Intersection extends new (...a: any[]) => any ? Intersection : Intersection extends object ? $mol_type_merge_object<Intersection> extends Intersection ? unknown extends $mol_type_equals<$mol_type_merge_object<Intersection>, Intersection> ? Intersection : {
-        [Key in keyof Intersection]: $mol_type_merge<Intersection[Key]>;
-    } : Intersection : Intersection;
-    type $mol_type_merge_object<Intersection> = {
-        [Key in keyof Intersection]: Intersection[Key];
-    };
-}
-
-declare namespace $ {
-    type $mol_type_partial_undefined<Val> = $mol_type_merge<Partial<Val> & Pick<Val, {
-        [Field in keyof Val]: undefined extends Val[Field] ? never : Field;
-    }[keyof Val]>>;
-}
-
-declare namespace $ {
-    function $mol_data_setup<Value extends $mol_data_value, Config = never>(value: Value, config: Config): Value & {
-        config: Config;
-        Value: ReturnType<Value>;
-    };
-}
-
-declare namespace $ {
-    function $mol_data_record<Sub extends Record<string, $mol_data_value>>(sub: Sub): ((val: $mol_type_merge<Partial<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }> & Pick<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }, ({ [key in keyof Sub]: Parameters<Sub[key]>[0]; } extends infer T ? { [Field in keyof T]: undefined extends { [key in keyof Sub]: Parameters<Sub[key]>[0]; }[Field] ? never : Field; } : never)[keyof Sub]>>) => Readonly<$mol_type_merge<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }> & Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, ({ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; } extends infer T_1 ? { [Field_1 in keyof T_1]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; } : never)[keyof Sub]>>>) & {
-        config: Sub;
-        Value: Readonly<$mol_type_merge<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }> & Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, ({ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; } extends infer T_2 ? { [Field_1 in keyof T_2]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; } : never)[keyof Sub]>>>;
-    };
-}
-
-declare namespace $ {
-    function $mol_diff_path<Item>(...paths: Item[][]): {
-        prefix: Item[];
-        suffix: Item[][];
-    };
-}
-
-declare namespace $ {
-    class $mol_error_mix extends Error {
-        errors: Error[];
-        constructor(message: string, ...errors: Error[]);
-        toJSON(): string;
-    }
-}
-
-declare namespace $ {
-    class $mol_data_error extends $mol_error_mix {
-    }
-}
-
-declare namespace $ {
-    function $mol_data_array<Sub extends $mol_data_value>(sub: Sub): ((val: readonly Parameters<Sub>[0][]) => readonly ReturnType<Sub>[]) & {
-        config: Sub;
-        Value: readonly ReturnType<Sub>[];
-    };
-}
-
-declare namespace $ {
-    let $mol_data_string: (val: string) => string;
-}
-
-declare namespace $ {
     let $mol_action: typeof $mol_wire_method;
 }
 
@@ -1465,7 +1374,7 @@ declare namespace $ {
     class $mol_fetch_response extends $mol_object2 {
         readonly native: Response;
         constructor(native: Response);
-        status(): "success" | "unknown" | "inform" | "redirect" | "wrong" | "failed";
+        status(): "unknown" | "success" | "inform" | "redirect" | "wrong" | "failed";
         code(): number;
         message(): string;
         headers(): Headers;
@@ -1495,8 +1404,9 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    function $mol_huggingface_run(this: $, space: string, method: string | number, ...data: readonly any[]): readonly string[];
-    function $mol_huggingface_async(space: string, method: number, ...data: readonly any[]): Promise<[string]> & {
+    function $mol_huggingface_run(this: $, space: string, method: string | number, ...data: readonly any[]): readonly any[];
+    function $mol_huggingface_rest(space: string, method: string, ...data: readonly any[]): readonly any[];
+    function $mol_huggingface_ws(space: string, fn_index: number, ...data: readonly any[]): Promise<readonly any[]> & {
         destructor: () => void;
     };
 }
@@ -1514,7 +1424,7 @@ declare namespace $ {
         static lang(next?: string): string;
         static source(lang: string): any;
         static texts(lang: string, next?: $mol_locale_dict): $mol_locale_dict;
-        static text(key: string): {} | null;
+        static text(key: string): string;
         static warn(key: string): null;
     }
 }
@@ -1523,18 +1433,10 @@ declare namespace $ {
     class $mol_link extends $mol_view {
         uri(): string;
         dom_name(): string;
-        attr(): {
-            href: string;
-            title: string;
-            target: string;
-            download: string;
-            mol_link_current: boolean;
-        };
+        attr(): Record<string, any>;
         sub(): readonly $mol_view_content[];
-        arg(): {};
-        event(): {
-            click: (event?: any) => any;
-        };
+        arg(): Record<string, any>;
+        event(): Record<string, any>;
         uri_toggle(): string;
         hint(): string;
         hint_safe(): string;
@@ -1559,19 +1461,15 @@ declare namespace $ {
             [key: string]: string;
         }>;
         static value(key: string, next?: string | null): string | null;
-        static link(next: any): string;
-        static make_link(next: {
-            [key: string]: any;
-        }): string;
+        static link(next: Record<string, string | null>): string;
+        static make_link(next: Record<string, string | null>): string;
         static go(next: {
             [key: string]: string | null;
         }): void;
         constructor(prefix?: string);
         value(key: string, next?: string): string | null;
         sub(postfix: string): $mol_state_arg;
-        link(next: {
-            [key: string]: string;
-        }): string;
+        link(next: Record<string, string | null>): string;
     }
 }
 
@@ -1636,14 +1534,7 @@ declare namespace $ {
 
 declare namespace $ {
     class $mol_check extends $mol_button_minor {
-        attr(): {
-            mol_check_checked: boolean;
-            "aria-checked": string;
-            role: string;
-            disabled: boolean;
-            tabindex: number;
-            title: string;
-        };
+        attr(): Record<string, any>;
         sub(): readonly $mol_view_content[];
         checked(next?: any): boolean;
         aria_checked(): string;
@@ -1674,7 +1565,7 @@ declare namespace $.$$ {
 declare namespace $ {
     class $mol_check_list extends $mol_view {
         Option(id: any): $$.$mol_check;
-        options(): {};
+        options(): Record<string, any>;
         keys(): readonly string[];
         sub(): readonly $mol_check[];
         option_checked(id: any, val?: any): boolean;
@@ -1733,7 +1624,7 @@ declare namespace $ {
         items(): readonly $mol_view[];
         rows(): readonly $mol_view[];
         current(val?: any): string;
-        switch_options(): {};
+        switch_options(): Record<string, any>;
         Switch(): $$.$mol_switch;
         Content(): $mol_view;
     }
@@ -1743,7 +1634,7 @@ declare namespace $.$$ {
     class $mol_deck extends $.$mol_deck {
         current(next?: string): string;
         switch_options(): Record<string, string>;
-        Content(): any;
+        Content(): $mol_view;
     }
 }
 
@@ -1755,7 +1646,7 @@ declare namespace $ {
 
 declare namespace $ {
     class $mol_link_source extends $mol_link {
-        hint(): {} | null;
+        hint(): string;
         sub(): readonly any[];
         Icon(): $mol_icon_github_circle;
     }
@@ -1764,9 +1655,7 @@ declare namespace $ {
 declare namespace $ {
     class $mol_page extends $mol_view {
         dom_name(): string;
-        field(): {
-            tabIndex: number;
-        };
+        field(): Record<string, any>;
         sub(): readonly any[];
         tabindex(): number;
         Logo(): any;
@@ -1873,22 +1762,72 @@ declare namespace $ {
         nonformers(next?: any): boolean;
         Nonformers(): $mol_check_box;
         Nonformers_label(): $mol_labeler;
-        order_dict(): {
-            nump: {} | null;
-            num: {} | null;
-            size: {} | null;
-            rea: {} | null;
-            rpp: {} | null;
-            rion: {} | null;
-            rcov: {} | null;
-            rmet: {} | null;
-            tmelt: {} | null;
-            eneg: {} | null;
-        };
+        order_dict(): Record<string, any>;
         Order_switch(): $$.$mol_switch;
         Order_label(): $mol_labeler;
         Setup(): $mol_page;
     }
+}
+
+declare namespace $ {
+    type $mol_data_value<Input = any, Output = any> = (val: Input) => Output;
+}
+
+declare namespace $ {
+    type $mol_type_equals<A, B> = (<X>() => X extends A ? 1 : 2) extends (<X>() => X extends B ? 1 : 2) ? unknown : never;
+}
+
+declare namespace $ {
+    type $mol_type_merge<Intersection> = Intersection extends (...a: any[]) => any ? Intersection : Intersection extends new (...a: any[]) => any ? Intersection : Intersection extends object ? $mol_type_merge_object<Intersection> extends Intersection ? unknown extends $mol_type_equals<$mol_type_merge_object<Intersection>, Intersection> ? Intersection : {
+        [Key in keyof Intersection]: $mol_type_merge<Intersection[Key]>;
+    } : Intersection : Intersection;
+    type $mol_type_merge_object<Intersection> = {
+        [Key in keyof Intersection]: Intersection[Key];
+    };
+}
+
+declare namespace $ {
+    type $mol_type_partial_undefined<Val> = $mol_type_merge<Partial<Val> & Pick<Val, {
+        [Field in keyof Val]: undefined extends Val[Field] ? never : Field;
+    }[keyof Val]>>;
+}
+
+declare namespace $ {
+    function $mol_data_setup<Value extends $mol_data_value, Config = never>(value: Value, config: Config): Value & {
+        config: Config;
+        Value: ReturnType<Value>;
+    };
+}
+
+declare namespace $ {
+    function $mol_data_record<Sub extends Record<string, $mol_data_value>>(sub: Sub): ((val: $mol_type_merge<Partial<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }> & Pick<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }, ({ [key in keyof Sub]: Parameters<Sub[key]>[0]; } extends infer T ? { [Field in keyof T]: undefined extends { [key in keyof Sub]: Parameters<Sub[key]>[0]; }[Field] ? never : Field; } : never)[keyof Sub]>>) => Readonly<$mol_type_merge<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }> & Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, ({ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; } extends infer T_1 ? { [Field_1 in keyof T_1]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; } : never)[keyof Sub]>>>) & {
+        config: Sub;
+        Value: Readonly<$mol_type_merge<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }> & Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, ({ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; } extends infer T_2 ? { [Field_1 in keyof T_2]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; } : never)[keyof Sub]>>>;
+    };
+}
+
+declare namespace $ {
+    function $mol_diff_path<Item>(...paths: Item[][]): {
+        prefix: Item[];
+        suffix: Item[][];
+    };
+}
+
+declare namespace $ {
+    class $mol_error_mix extends Error {
+        errors: Error[];
+        constructor(message: string, ...errors: Error[]);
+        toJSON(): string;
+    }
+}
+
+declare namespace $ {
+    class $mol_data_error extends $mol_error_mix {
+    }
+}
+
+declare namespace $ {
+    let $mol_data_string: (val: string) => string;
 }
 
 declare namespace $ {
@@ -1906,6 +1845,13 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    function $mol_data_array<Sub extends $mol_data_value>(sub: Sub): ((val: readonly Parameters<Sub>[0][]) => readonly ReturnType<Sub>[]) & {
+        config: Sub;
+        Value: readonly ReturnType<Sub>[];
+    };
+}
+
+declare namespace $ {
     class $mol_import extends $mol_object2 {
         static module(uri: string): any;
         static module_async(uri: string): Promise<any>;
@@ -1917,8 +1863,10 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    class $lib_d3 extends $mol_object2 {
-        static all(): any;
+    class $visavis_lib extends $mol_object2 {
+        static plotly(): any;
+        static pca(): any;
+        static d3(): any;
     }
 }
 
@@ -2042,13 +1990,8 @@ declare namespace $ {
     }
     class $mol_pop_bubble extends $mol_view {
         sub(): readonly $mol_view_content[];
-        style(): {
-            maxHeight: number;
-        };
-        attr(): {
-            mol_pop_align: string;
-            tabindex: number;
-        };
+        style(): Record<string, any>;
+        attr(): Record<string, any>;
         content(): readonly $mol_view_content[];
         height_max(): number;
         align(): string;
@@ -2085,9 +2028,7 @@ declare namespace $ {
 
 declare namespace $ {
     class $mol_pick extends $mol_pop {
-        event(): {
-            keydown: (event?: any) => any;
-        };
+        event(): Record<string, any>;
         Anchor(): $$.$mol_check;
         keydown(event?: any): any;
         trigger_enabled(): boolean;
@@ -2108,10 +2049,8 @@ declare namespace $ {
 
 declare namespace $ {
     class $mol_hotkey extends $mol_plugin {
-        event(): {
-            keydown: (event?: any) => any;
-        };
-        key(): {};
+        event(): Record<string, any>;
+        key(): Record<string, any>;
         mod_ctrl(): boolean;
         mod_alt(): boolean;
         mod_shift(): boolean;
@@ -2236,24 +2175,9 @@ declare namespace $ {
         autocomplete(): boolean;
         selection(val?: any): readonly number[];
         auto(): readonly any[];
-        field(): {
-            disabled: boolean;
-            value: string;
-            placeholder: string;
-            spellcheck: boolean;
-            autocomplete: string;
-            selectionEnd: number;
-            selectionStart: number;
-            inputMode: string;
-            enterkeyhint: string;
-        };
-        attr(): {
-            maxlength: number;
-            type: string;
-        };
-        event(): {
-            input: (event?: any) => any;
-        };
+        field(): Record<string, any>;
+        attr(): Record<string, any>;
+        event(): Record<string, any>;
         plugins(): readonly any[];
         selection_watcher(): any;
         disabled(): boolean;
@@ -2445,9 +2369,7 @@ declare namespace $ {
         event_down(event?: any): any;
         event_left(event?: any): any;
         event_right(event?: any): any;
-        event(): {
-            keydown: (event?: any) => any;
-        };
+        event(): Record<string, any>;
         event_key(event?: any): any;
     }
 }
@@ -2466,14 +2388,14 @@ declare namespace $.$$ {
 
 declare namespace $ {
     class $mol_select extends $mol_pick {
-        dictionary(val?: any): {};
+        dictionary(val?: any): Record<string, any>;
         options(): readonly string[];
         value(val?: any): string;
         option_label_default(): string;
         Option_row(id: any): $mol_button_minor;
         No_options(): $mol_view;
         plugins(): readonly any[];
-        hint(): {} | null;
+        hint(): string;
         bubble_content(): readonly any[];
         Filter(): $$.$mol_string;
         Trigger_icon(): $mol_icon_dots_vertical;
@@ -2482,7 +2404,7 @@ declare namespace $ {
         filter_pattern(val?: any): string;
         Option_label(id: any): $$.$mol_dimmer;
         option_content(id: any): readonly any[];
-        no_options_message(): {} | null;
+        no_options_message(): string;
         nav_components(): readonly $mol_view[];
         option_focused(component?: any): any;
         nav_cycle(val?: any): boolean;
@@ -2535,9 +2457,11 @@ declare namespace $ {
         pages(): readonly any[];
         plot_title(): string;
         Root(): $mol_view;
+        value_min(): number;
         Heatmap_min(): $mol_view;
         heatmap_color(id: any): string;
         Heatmap_color(id: any): $mol_view;
+        value_max(): number;
         Heatmap_max(): $mol_view;
         heatmap_color_list(): readonly any[];
         Heatmap_legend(): $$.$mol_list;
@@ -2548,18 +2472,7 @@ declare namespace $ {
         nonformers(next?: any): boolean;
         Nonformers(): $mol_check_box;
         Nonformers_label(): $mol_labeler;
-        order_dict(): {
-            nump: {} | null;
-            num: {} | null;
-            size: {} | null;
-            rea: {} | null;
-            rpp: {} | null;
-            rion: {} | null;
-            rcov: {} | null;
-            rmet: {} | null;
-            tmelt: {} | null;
-            eneg: {} | null;
-        };
+        order_dict(): Record<string, any>;
         X_order_select(): $$.$mol_select;
         X_order_label(): $mol_labeler;
         Y_order_select(): $$.$mol_select;
@@ -2581,20 +2494,38 @@ declare namespace $ {
     };
 }
 
+declare namespace $ {
+    class $lib_d3 extends $mol_object2 {
+        static all(): any;
+    }
+}
+
 declare namespace $.$$ {
     const $visavis_element_prop: {
-        num: number[];
-        nump: number[];
-        size: number[];
-        rea: number[];
-        rpp: number[];
-        rion: number[];
-        rcov: number[];
-        rmet: number[];
-        tmelt: number[];
-        eneg: number[];
+        readonly num: readonly [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95];
+        readonly nump: readonly [0, 1, 112, 2, 8, 82, 88, 94, 100, 106, 113, 3, 9, 83, 89, 95, 101, 107, 114, 4, 10, 14, 46, 50, 54, 58, 62, 66, 70, 74, 78, 84, 90, 96, 102, 108, 115, 5, 11, 15, 47, 51, 55, 59, 63, 67, 71, 75, 79, 85, 91, 97, 103, 109, 116, 6, 12, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 86, 92, 98, 104, 110, 117, 7, 13, 17, 19, 21, 23, 25, 27, 29];
+        readonly size: readonly [0, 0.040000098, 0.05525814, 0.32352134, 0.149871021, 0.15316946, 0.152079019, 0.147837836, 0.141252647, 0.130400994, 0.118123987, 0.578463822, 0.235527361, 0.222322819, 0.208407341, 0.19392461, 0.178988166, 0.160596861, 0.14201091, 0.692195698, 0.671411055, 0.64709144, 0.440998616, 0.425579654, 0.410235863, 0.394967358, 0.379774576, 0.364658122, 0.349618659, 0.334656835, 0.310912262, 0.287688252, 0.264934676, 0.242609734, 0.220678182, 0.195297025, 0.170450145, 0.832019702, 0.797564264, 0.762242103, 0.515950935, 0.494387183, 0.473421463, 0.452993466, 0.433052136, 0.413553912, 0.394461351, 0.375742041, 0.347395886, 0.319938571, 0.293280312, 0.267345197, 0.242068451, 0.213172397, 0.185071259, 0.910157427, 0.868793456, 0.828185801, 0.810462652, 0.793233638, 0.776484764, 0.760190637, 0.744322073, 0.728849599, 0.713745039, 0.698982175, 0.684536953, 0.670387461, 0.65651381, 0.642897972, 0.629523601, 0.616375866, 0.588840308, 0.562314966, 0.536696361, 0.51189659, 0.487840384, 0.464462811, 0.441707474, 0.419525064, 0.386690726, 0.355029594, 0.324425963, 0.294781292, 0.266010922, 0.233351806, 0.201712905, 1, 0.952025289, 0.905996701, 0.885161237, 0.864979518, 0.845420273, 0.826445343, 0.808015348, 0.790092251];
+        readonly rea: readonly [0, 2.953092434, 2.137675759, 0.365119614, 0.788170962, 0.771198036, 0.776727701, 0.799010527, 0.836260342, 0.905851889, 0.999999998, 0.204202895, 0.501529786, 0.531317421, 0.56679379, 0.609123241, 0.659954172, 0.735531107, 0.831795156, 0.170651143, 0.175933932, 0.182546051, 0.267855686, 0.27756023, 0.28794164, 0.299072783, 0.311037111, 0.323930772, 0.337865225, 0.352970489, 0.379927077, 0.410597187, 0.445860802, 0.486888901, 0.535277144, 0.604842736, 0.693011946, 0.141972584, 0.148105917, 0.154969119, 0.228944225, 0.238930116, 0.249511262, 0.260763114, 0.272770822, 0.28563141, 0.299456427, 0.31437522, 0.340027017, 0.369208334, 0.402768213, 0.441840692, 0.487977621, 0.554124213, 0.63826219, 0.129784127, 0.135963256, 0.142629814, 0.145748835, 0.148914495, 0.1521266, 0.155387322, 0.158700099, 0.162069084, 0.165498855, 0.168994276, 0.172560424, 0.17620256, 0.179926127, 0.183736755, 0.187640284, 0.191642784, 0.200604451, 0.210067301, 0.22009463, 0.230757519, 0.242136549, 0.254323886, 0.267425828, 0.281565982, 0.305474062, 0.332715889, 0.364101522, 0.400717379, 0.444056906, 0.506205582, 0.58560451, 0.118123987, 0.124076522, 0.130380151, 0.133449119, 0.136562756, 0.139722208, 0.142930186, 0.146190276, 0.149506576];
+        readonly rpp: readonly [0, 1.25, 0, 1.61, 1.08, 0.795, 0.64, 0.54, 0.465, 0.405, 0, 2.65, 2.03, 1.675, 1.42, 1.24, 1.1, 1.01, 0, 3.69, 3, 2.75, 2.58, 2.43, 2.44, 2.22, 2.11, 2.02, 2.18, 2.04, 1.88, 1.695, 1.56, 1.415, 1.285, 1.2, 0, 4.1, 3.21, 2.94, 2.825, 2.76, 2.72, 2.65, 2.605, 2.52, 2.45, 2.375, 2.215, 2.05, 1.88, 1.765, 1.67, 1.585, 0, 4.31, 3.402, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2.91, 2.79, 2.735, 2.68, 2.65, 2.628, 2.7, 2.66, 2.41, 2.235, 2.09, 1.997, 1.9, 1.83, 0, 4.37, 3.53, 0, 0, 0, 0, 0, 0, 0];
+        readonly rion: readonly [0, 0, 0, 0.6, 0.3, 0.2, 0.15, 0.12, 0.1, 0.09, 0, 0.96, 0.63, 0.5, 0.42, 0.36, 0.32, 0.28, 0, 1.33, 0.96, 0.8, 0.68, 0.65, 0.62, 0.6, 0.59, 0.62, 0.59, 0.96, 0.78, 0.63, 0.53, 0.46, 0.41, 0.37, 0, 1.49, 1.11, 0.93, 0.8, 0.77, 0.75, 0.72, 0.69, 0.75, 0.85, 1.12, 0.93, 0.76, 0.65, 0.57, 0.51, 0.46, 0, 1.65, 1.26, 1.06, 1.05, 1.04, 1.03, 1.02, 1.01, 1.01, 1, 0.99, 0.98, 0.97, 0.96, 0.95, 0.94, 0.93, 0.8, 0.77, 0.75, 0.72, 0.69, 0.81, 0.9, 1.11, 0.97, 0.9, 0.83, 0.77, 0.56, 0.51, 0, 1.74, 1.34, 1.14, 1.11, 1.08, 1.05, 1.04, 1.03, 1.02];
+        readonly rcov: readonly [0, 30, 0, 123, 89, 88, 77, 70, 66, 58, 0, 0, 136, 125, 117, 110, 104, 99, 0, 203, 174, 144, 132, 0, 0, 117, 116, 116, 115, 117, 125, 125, 122, 121, 117, 114, 0, 217, 192, 162, 145, 134, 129, 0, 124, 125, 128, 134, 141, 150, 140, 141, 137, 133, 0, 235, 198, 169, 165, 165, 164, 0, 166, 185, 161, 159, 159, 158, 157, 156, 170, 156, 144, 134, 130, 128, 126, 126, 129, 134, 144, 155, 154, 152, 153, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        readonly rmet: readonly [0, 0.78, 0, 1.562, 1.128, 0.98, 0.916, 0.88, 0.89, 0, 0, 1.911, 1.602, 1.432, 1.319, 1.28, 1.27, 0, 0, 2.376, 1.974, 1.941, 1.462, 1.346, 1.36, 1.304, 1.274, 1.252, 1.246, 1.278, 1.394, 1.411, 1.369, 1.39, 1.4, 0, 0, 2.546, 2.151, 1.801, 1.602, 1.468, 1.4, 1.36, 1.339, 1.345, 1.376, 1.445, 1.568, 1.663, 1.623, 1.59, 1.6, 0, 0, 2.731, 2.243, 1.877, 1.715, 1.828, 1.821, 1.81, 1.802, 1.799, 1.802, 1.782, 1.773, 1.766, 1.757, 1.746, 1.74, 1.734, 1.58, 1.467, 1.408, 1.375, 1.353, 1.357, 1.387, 1.442, 1.573, 1.716, 1.75, 1.7, 1.76, 0, 0, 2.8, 2.26, 1.878, 1.798, 1.63, 1.56, 1.555, 1.58, 1.81];
+        readonly tmelt: readonly [0, 0.003664921, 0.00026178, 0.118586387, 0.405759162, 0.673560209, 1, 0.016492147, 0.014397906, 0.014136126, 0.006544503, 0.097120419, 0.241361257, 0.244240838, 0.440575916, 0.082984293, 0.10104712, 0.045026178, 0.021989529, 0.088219895, 0.290837696, 0.47434555, 0.506020942, 0.566230366, 0.557591623, 0.397382199, 0.473298429, 0.462827225, 0.451832461, 0.354973822, 0.181413613, 0.079319372, 0.317015707, 0.285340314, 0.128272251, 0.069633508, 0.030628272, 0.081675393, 0.273036649, 0.470157068, 0.556282723, 0.717539267, 0.756544503, 0.640052356, 0.67617801, 0.586125654, 0.477748691, 0.323036649, 0.155497382, 0.112565445, 0.132198953, 0.236649215, 0.189267016, 0.101308901, 0.042146597, 0.079057592, 0.261256545, 0.312303665, 0.280366492, 0.315183246, 0.338743455, 0.377225131, 0.352094241, 0.286649215, 0.414921466, 0.427486911, 0.439790576, 0.456282723, 0.469895288, 0.47591623, 0.287172775, 0.504973822, 0.653141361, 0.856806283, 0.964136126, 0.903926702, 0.868586387, 0.702356021, 0.535340314, 0.35, 0.061256545, 0.15104712, 0.157329843, 0.142408377, 0.137958115, 0.15052356, 0.052879581, 0.078534031, 0.254712042, 0.346335079, 0.528795812, 0.553141361, 0.368062827, 0.239005236, 0.239267016, 0.331675393];
+        readonly eneg: readonly [0, 3.69, 6.29, 2.32, 3.71, 4.88, 6.08, 7.31, 8.5, 9.7, 10.92, 2.27, 3.37, 4.21, 5.08, 5.95, 6.79, 7.64, 8.5, 2.08, 3, 3.11, 3.19, 3.27, 3.41, 3.4, 3.47, 3.53, 3.59, 3.74, 3.7, 4.37, 5.09, 5.82, 6.53, 7.21, 7.93, 2.04, 2.89, 3.04, 3.14, 3.25, 3.41, 3.35, 3.47, 3.57, 3.73, 3.81, 3.6, 4.19, 4.83, 5.47, 6.08, 6.69, 7.29, 1.97, 2.76, 2.89, 2.86, 2.83, 2.85, 2.87, 2.89, 2.91, 3.02, 2.95, 2.97, 2.99, 3, 3.02, 3.04, 3.11, 3.3, 3.45, 3.48, 3.5, 3.57, 3.6, 3.71, 3.84, 3.82, 4.34, 4.92, 5.47, 6.01, 6.56, 7.12, 2.02, 2.78, 2.93, 3.02, 2.98, 2.98, 2.98, 2.96, 2.97];
     };
-    const $visavis_element_list: (string | null)[];
+    const $visavis_element_list: readonly [null, "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am"];
+    const $visavis_elemental_names: {
+        readonly num: "atomic number";
+        readonly nump: "periodic number";
+        readonly size: "atomic size";
+        readonly rea: "atomic reactivity";
+        readonly rpp: "pseudopotential radii";
+        readonly rion: "ionic radii";
+        readonly rcov: "covalent radii";
+        readonly rmet: "metallic radii";
+        readonly tmelt: "melting temperature";
+        readonly eneg: "electronegativity";
+    };
 }
 
 declare namespace $ {
@@ -2766,7 +2697,7 @@ declare namespace $.$$ {
                 tickfont: {
                     size: number;
                 };
-                ticktext: (string | null)[];
+                ticktext: ("B" | "C" | "F" | "H" | "I" | "K" | "N" | "O" | "P" | "S" | "U" | "V" | "W" | "Y" | "He" | "Li" | "Be" | "Ne" | "Na" | "Mg" | "Al" | "Si" | "Cl" | "Ar" | "Ca" | "Sc" | "Ti" | "Cr" | "Mn" | "Fe" | "Co" | "Ni" | "Cu" | "Zn" | "Ga" | "Ge" | "As" | "Se" | "Br" | "Kr" | "Rb" | "Sr" | "Zr" | "Nb" | "Mo" | "Tc" | "Ru" | "Rh" | "Pd" | "Ag" | "Cd" | "In" | "Sn" | "Sb" | "Te" | "Xe" | "Cs" | "Ba" | "La" | "Ce" | "Pr" | "Nd" | "Pm" | "Sm" | "Eu" | "Gd" | "Tb" | "Dy" | "Ho" | "Er" | "Tm" | "Yb" | "Lu" | "Hf" | "Ta" | "Re" | "Os" | "Ir" | "Pt" | "Au" | "Hg" | "Tl" | "Pb" | "Bi" | "Po" | "At" | "Rn" | "Fr" | "Ra" | "Ac" | "Th" | "Pa" | "Np" | "Pu" | "Am" | null)[];
                 tickvals: any;
             };
             yaxis: {
@@ -2784,7 +2715,7 @@ declare namespace $.$$ {
                 tickfont: {
                     size: number;
                 };
-                ticktext: (string | null)[];
+                ticktext: ("B" | "C" | "F" | "H" | "I" | "K" | "N" | "O" | "P" | "S" | "U" | "V" | "W" | "Y" | "He" | "Li" | "Be" | "Ne" | "Na" | "Mg" | "Al" | "Si" | "Cl" | "Ar" | "Ca" | "Sc" | "Ti" | "Cr" | "Mn" | "Fe" | "Co" | "Ni" | "Cu" | "Zn" | "Ga" | "Ge" | "As" | "Se" | "Br" | "Kr" | "Rb" | "Sr" | "Zr" | "Nb" | "Mo" | "Tc" | "Ru" | "Rh" | "Pd" | "Ag" | "Cd" | "In" | "Sn" | "Sb" | "Te" | "Xe" | "Cs" | "Ba" | "La" | "Ce" | "Pr" | "Nd" | "Pm" | "Sm" | "Eu" | "Gd" | "Tb" | "Dy" | "Ho" | "Er" | "Tm" | "Yb" | "Lu" | "Hf" | "Ta" | "Re" | "Os" | "Ir" | "Pt" | "Au" | "Hg" | "Tl" | "Pb" | "Bi" | "Po" | "At" | "Rn" | "Fr" | "Ra" | "Ac" | "Th" | "Pa" | "Np" | "Pu" | "Am" | null)[];
                 tickvals: any;
             };
             zaxis: {
@@ -2802,7 +2733,7 @@ declare namespace $.$$ {
                 tickfont: {
                     size: number;
                 };
-                ticktext: (string | null)[];
+                ticktext: ("B" | "C" | "F" | "H" | "I" | "K" | "N" | "O" | "P" | "S" | "U" | "V" | "W" | "Y" | "He" | "Li" | "Be" | "Ne" | "Na" | "Mg" | "Al" | "Si" | "Cl" | "Ar" | "Ca" | "Sc" | "Ti" | "Cr" | "Mn" | "Fe" | "Co" | "Ni" | "Cu" | "Zn" | "Ga" | "Ge" | "As" | "Se" | "Br" | "Kr" | "Rb" | "Sr" | "Zr" | "Nb" | "Mo" | "Tc" | "Ru" | "Rh" | "Pd" | "Ag" | "Cd" | "In" | "Sn" | "Sb" | "Te" | "Xe" | "Cs" | "Ba" | "La" | "Ce" | "Pr" | "Nd" | "Pm" | "Sm" | "Eu" | "Gd" | "Tb" | "Dy" | "Ho" | "Er" | "Tm" | "Yb" | "Lu" | "Hf" | "Ta" | "Re" | "Os" | "Ir" | "Pt" | "Au" | "Hg" | "Tl" | "Pb" | "Bi" | "Po" | "At" | "Rn" | "Fr" | "Ra" | "Ac" | "Th" | "Pa" | "Np" | "Pu" | "Am" | null)[];
                 tickvals: any;
             };
             camera: {
@@ -2818,7 +2749,7 @@ declare namespace $.$$ {
             y: never[];
             z: never[];
         };
-        order_els(prop: string): (string | null)[];
+        order_els(prop: string): ("B" | "C" | "F" | "H" | "I" | "K" | "N" | "O" | "P" | "S" | "U" | "V" | "W" | "Y" | "He" | "Li" | "Be" | "Ne" | "Na" | "Mg" | "Al" | "Si" | "Cl" | "Ar" | "Ca" | "Sc" | "Ti" | "Cr" | "Mn" | "Fe" | "Co" | "Ni" | "Cu" | "Zn" | "Ga" | "Ge" | "As" | "Se" | "Br" | "Kr" | "Rb" | "Sr" | "Zr" | "Nb" | "Mo" | "Tc" | "Ru" | "Rh" | "Pd" | "Ag" | "Cd" | "In" | "Sn" | "Sb" | "Te" | "Xe" | "Cs" | "Ba" | "La" | "Ce" | "Pr" | "Nd" | "Pm" | "Sm" | "Eu" | "Gd" | "Tb" | "Dy" | "Ho" | "Er" | "Tm" | "Yb" | "Lu" | "Hf" | "Ta" | "Re" | "Os" | "Ir" | "Pt" | "Au" | "Hg" | "Tl" | "Pb" | "Bi" | "Po" | "At" | "Rn" | "Fr" | "Ra" | "Ac" | "Th" | "Pa" | "Np" | "Pu" | "Am" | null)[];
     }
 }
 
@@ -2828,160 +2759,17 @@ declare namespace $.$$ {
 declare namespace $ {
     class $visavis_phase extends $mol_book2 {
         plot(): $visavis_plot;
-        colors_by_nphases(): {
-            1: string;
-            alt_1: string;
-            3: string;
-            4: string;
-            5: string;
-            default: string;
-        };
-        line(): {
-            phase: {
-                width: number;
-            };
-            compound: {
-                width: number;
-                color: string;
-            };
-            default: {
-                width: number;
-                color: string;
-            };
-        };
+        colors_by_nphases(): Record<string, any>;
+        line(): Record<string, any>;
         is_triangle(): boolean;
-        triangle(): {
-            datamock: readonly any[];
-            layout: {
-                hovermode: string;
-                font: {
-                    size: number;
-                    color: string;
-                    family: string;
-                };
-                ternary: {
-                    aaxis: {
-                        title: string;
-                        ticks: string;
-                        showline: boolean;
-                        showgrid: boolean;
-                        fixedrange: boolean;
-                        linewidth: number;
-                    };
-                    baxis: {
-                        title: string;
-                        ticks: string;
-                        showline: boolean;
-                        showgrid: boolean;
-                        fixedrange: boolean;
-                        linewidth: number;
-                    };
-                    caxis: {
-                        title: string;
-                        ticks: string;
-                        showline: boolean;
-                        showgrid: boolean;
-                        fixedrange: boolean;
-                        linewidth: number;
-                    };
-                };
-                shapes: readonly any[];
-                shape: {
-                    type: string;
-                    path: string;
-                    line: {
-                        width: number;
-                    };
-                };
-                annotations: readonly any[];
-            };
-        };
+        triangle(): Record<string, any>;
+        triangle_shape_fix(): Record<string, any>;
         triangle_annotations(): readonly any[];
-        rectangle(): {
-            datamock: readonly any[];
-            layout: {
-                hovermode: string;
-                font: {
-                    size: number;
-                    color: string;
-                    family: string;
-                };
-                xaxis: {
-                    title: string;
-                    range: readonly any[];
-                    fixedrange: boolean;
-                    showticks: boolean;
-                    showline: boolean;
-                    zeroline: boolean;
-                    showgrid: boolean;
-                    ticklen: number;
-                    tickfont: {
-                        size: number;
-                    };
-                    hoverformat: string;
-                };
-                xaxis2: {
-                    range: readonly any[];
-                    fixedrange: boolean;
-                    showticks: boolean;
-                    showline: boolean;
-                    zeroline: boolean;
-                    showgrid: boolean;
-                    ticklen: number;
-                    tickfont: {
-                        size: number;
-                    };
-                    side: string;
-                    overlaying: string;
-                };
-                yaxis: {
-                    title: string;
-                    range: readonly any[];
-                    fixedrange: boolean;
-                    showticks: boolean;
-                    showticklabels: boolean;
-                    showline: boolean;
-                    zeroline: boolean;
-                    showgrid: boolean;
-                    ticklen: number;
-                    tickfont: {
-                        size: number;
-                    };
-                    hoverformat: string;
-                };
-                yaxis2: {
-                    range: readonly any[];
-                    fixedrange: boolean;
-                    showticks: boolean;
-                    showticklabels: boolean;
-                    showline: boolean;
-                    zeroline: boolean;
-                    showgrid: boolean;
-                    ticklen: number;
-                    tickfont: {
-                        size: number;
-                    };
-                    side: string;
-                    overlaying: string;
-                };
-                shapes: readonly any[];
-                annotations: readonly any[];
-            };
-        };
+        rectangle(): Record<string, any>;
         rectangle_annotations(): readonly any[];
-        annotation(): {
-            show_arrow: boolean;
-            font: {
-                size: number;
-                family: string;
-            };
-        };
+        annotation(): Record<string, any>;
         annotation_textangle(id: any): number;
-        plot_options(): {
-            displaylogo: boolean;
-            displayModeBar: boolean;
-            staticPlot: boolean;
-        };
+        plot_options(): Record<string, any>;
         pages(): readonly any[];
         json_title_a(): string;
         json_title_b(): string;
@@ -3004,31 +2792,32 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    function $mol_data_dict<Sub extends $mol_data_value>(sub: Sub): ((val: Readonly<Record<string, ReturnType<Sub>>>) => Readonly<Record<string, ReturnType<Sub>>>) & {
-        config: Sub;
-        Value: Readonly<Record<string, ReturnType<Sub>>>;
-    };
-}
-
-declare namespace $ {
     function $mol_data_const<Val>(ref: Val): ((val: Val) => Val) & {
         config: Val;
         Value: Val;
     };
 }
 
+declare namespace $ {
+    function $mol_data_dict<Sub extends $mol_data_value>(sub: Sub): ((val: Readonly<Record<string, ReturnType<Sub>>>) => Readonly<Record<string, ReturnType<Sub>>>) & {
+        config: Sub;
+        Value: Readonly<Record<string, ReturnType<Sub>>>;
+    };
+}
+
 declare namespace $.$$ {
-    const Label: (val: any) => [string, number[], number | null];
+    const Label_json: (val: any) => [string, number[], number | null];
     export function inside_triangle(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): boolean;
     export function cartesian_to_ternary(x: number, y: number): number[];
     export function fix_comp_impossible(comp_range: any, obj_left: any, obj_right: any): any;
     export class $visavis_phase extends $.$visavis_phase {
         plot_title(): string;
         json(): Readonly<{
-            temp: readonly number[];
-            arity: number;
-            entry: string;
             naxes: number;
+            arity: number;
+            diatype: string;
+            chemical_elements: readonly string[];
+            temp: readonly number[];
             labels: readonly [string, number[], number | null][];
             shapes: readonly Readonly<{
                 kind: string;
@@ -3041,45 +2830,49 @@ declare namespace $.$$ {
                 reflabel?: number | undefined;
                 chemical_elements?: readonly string[] | undefined;
             }>[];
-            diatype: string;
-            title_a: string;
-            title_b: string;
-            title_c?: string | undefined;
-            comp_a?: readonly number[] | undefined;
-            comp_end: {
-                [x: string]: number;
-            };
-            comp_range: readonly number[];
-            comp_start: {
-                [x: string]: number;
-            };
-            chemical_elements: readonly string[];
-            object_repr: string;
+            entry: string;
             object_type: string;
             use_visavis_type: string;
+            title_a?: string | undefined;
+            title_b?: string | undefined;
+            object_repr?: string | undefined;
+            comp_end?: {
+                [x: string]: number;
+            } | undefined;
+            comp_range?: readonly number[] | undefined;
+            comp_start?: {
+                [x: string]: number;
+            } | undefined;
+            title_c?: string | undefined;
+            comp_a?: {
+                [x: string]: number;
+            } | undefined;
+            comp_b?: {
+                [x: string]: number;
+            } | undefined;
+            comp_c?: {
+                [x: string]: number;
+            } | undefined;
+            range_a?: readonly number[] | undefined;
+            range_b?: readonly number[] | undefined;
+            range_c?: readonly number[] | undefined;
         }>;
         json_title_b(): string;
         json_title_a(): string;
         json_title_c(): string;
         json_comp_range(): readonly number[];
         json_temp(): readonly number[];
-        data_demo(): false;
+        data_demo(): boolean;
         show_ticks(): boolean;
         is_triangle(): boolean;
-        layout_shapes(): ({
-            type: string;
-            path: string;
-            line: {
-                width: number;
-            };
-        } | {
+        layout_shapes(): (Record<string, any> | {
             fillcolor?: any;
             fillOpacity?: number | undefined;
             type: string;
             path: string;
             line: any;
         })[];
-        annotation_textangle(label: ReturnType<typeof Label>): 0 | -65;
+        annotation_textangle(label: ReturnType<typeof Label_json>): 0 | -65;
         annotations(): any[];
         mouseover(): void;
         mouseout(): void;
@@ -3099,10 +2892,2819 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
-    class $visavis_app extends $mol_book2 {
-        attr(): {
-            mol_theme: string;
+    class $visavis_plot_plotly extends $mol_page {
+        plot(): $visavis_plot;
+        json(): Record<string, any>;
+        pages(): readonly any[];
+        plot_options(): Record<string, any>;
+        plot_title(): string;
+        draw(): any;
+        Root(): $mol_view;
+        error_showed(next?: any): string;
+        Error(): $mol_view;
+        plot_body(): readonly any[];
+        Plot(): $mol_page;
+    }
+}
+
+declare namespace $.$$ {
+    class $visavis_plot_plotly extends $.$visavis_plot_plotly {
+        plot_title(): string;
+        json(): any;
+        subscribe_events(): void;
+        layout(): {
+            font: {
+                family: string;
+                size: number;
+            };
         };
+        data(): any;
+        draw(): void;
+    }
+}
+
+declare namespace $.$$ {
+}
+
+declare namespace $ {
+    class $visavis_bar extends $visavis_plot_plotly {
+    }
+}
+
+declare namespace $.$$ {
+    const $visavis_bar_json: ((val: {
+        payload: {
+            x: readonly number[];
+            dx: number;
+            y: readonly number[];
+            xtitle?: string | undefined;
+            ytitle?: string | undefined;
+        };
+        payload2?: {
+            x: readonly number[];
+            dx: number;
+            y: readonly number[];
+            xtitle?: string | undefined;
+            ytitle?: string | undefined;
+        } | undefined;
+    }) => Readonly<{
+        payload: Readonly<{
+            x: readonly number[];
+            dx: number;
+            y: readonly number[];
+            xtitle?: string | undefined;
+            ytitle?: string | undefined;
+        }>;
+        payload2?: Readonly<{
+            x: readonly number[];
+            dx: number;
+            y: readonly number[];
+            xtitle?: string | undefined;
+            ytitle?: string | undefined;
+        }> | undefined;
+    }>) & {
+        config: {
+            payload: ((val: {
+                x: readonly number[];
+                dx: number;
+                y: readonly number[];
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+            }) => Readonly<{
+                x: readonly number[];
+                dx: number;
+                y: readonly number[];
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+            }>) & {
+                config: {
+                    x: ((val: readonly number[]) => readonly number[]) & {
+                        config: (val: number) => number;
+                        Value: readonly number[];
+                    };
+                    dx: (val: number) => number;
+                    y: ((val: readonly number[]) => readonly number[]) & {
+                        config: (val: number) => number;
+                        Value: readonly number[];
+                    };
+                    xtitle: ((val: string | undefined) => string | undefined) & {
+                        config: {
+                            sub: (val: string) => string;
+                            fallback: (() => string) | undefined;
+                        };
+                        Value: string | undefined;
+                    };
+                    ytitle: ((val: string | undefined) => string | undefined) & {
+                        config: {
+                            sub: (val: string) => string;
+                            fallback: (() => string) | undefined;
+                        };
+                        Value: string | undefined;
+                    };
+                };
+                Value: Readonly<{
+                    x: readonly number[];
+                    dx: number;
+                    y: readonly number[];
+                    xtitle?: string | undefined;
+                    ytitle?: string | undefined;
+                }>;
+            };
+            payload2: ((val: {
+                x: readonly number[];
+                dx: number;
+                y: readonly number[];
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+            } | undefined) => Readonly<{
+                x: readonly number[];
+                dx: number;
+                y: readonly number[];
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+            }> | undefined) & {
+                config: {
+                    sub: ((val: {
+                        x: readonly number[];
+                        dx: number;
+                        y: readonly number[];
+                        xtitle?: string | undefined;
+                        ytitle?: string | undefined;
+                    }) => Readonly<{
+                        x: readonly number[];
+                        dx: number;
+                        y: readonly number[];
+                        xtitle?: string | undefined;
+                        ytitle?: string | undefined;
+                    }>) & {
+                        config: {
+                            x: ((val: readonly number[]) => readonly number[]) & {
+                                config: (val: number) => number;
+                                Value: readonly number[];
+                            };
+                            dx: (val: number) => number;
+                            y: ((val: readonly number[]) => readonly number[]) & {
+                                config: (val: number) => number;
+                                Value: readonly number[];
+                            };
+                            xtitle: ((val: string | undefined) => string | undefined) & {
+                                config: {
+                                    sub: (val: string) => string;
+                                    fallback: (() => string) | undefined;
+                                };
+                                Value: string | undefined;
+                            };
+                            ytitle: ((val: string | undefined) => string | undefined) & {
+                                config: {
+                                    sub: (val: string) => string;
+                                    fallback: (() => string) | undefined;
+                                };
+                                Value: string | undefined;
+                            };
+                        };
+                        Value: Readonly<{
+                            x: readonly number[];
+                            dx: number;
+                            y: readonly number[];
+                            xtitle?: string | undefined;
+                            ytitle?: string | undefined;
+                        }>;
+                    };
+                    fallback: (() => Readonly<{
+                        x: readonly number[];
+                        dx: number;
+                        y: readonly number[];
+                        xtitle?: string | undefined;
+                        ytitle?: string | undefined;
+                    }>) | undefined;
+                };
+                Value: Readonly<{
+                    x: readonly number[];
+                    dx: number;
+                    y: readonly number[];
+                    xtitle?: string | undefined;
+                    ytitle?: string | undefined;
+                }> | undefined;
+            };
+        };
+        Value: Readonly<{
+            payload: Readonly<{
+                x: readonly number[];
+                dx: number;
+                y: readonly number[];
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+            }>;
+            payload2?: Readonly<{
+                x: readonly number[];
+                dx: number;
+                y: readonly number[];
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+            }> | undefined;
+        }>;
+    };
+    class $visavis_bar extends $.$visavis_bar {
+        json(): Readonly<{
+            payload: Readonly<{
+                x: readonly number[];
+                dx: number;
+                y: readonly number[];
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+            }>;
+            payload2?: Readonly<{
+                x: readonly number[];
+                dx: number;
+                y: readonly number[];
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+            }> | undefined;
+        }>;
+        subscribe_events(): void;
+        layout(): {
+            showlegend: boolean;
+            legend: {
+                x: number;
+                y: number;
+                font: {
+                    family: string;
+                    size: number;
+                };
+            };
+            xaxis: {
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                showticklabels: boolean;
+                zeroline: boolean;
+                ticklen: number;
+                dtick: number;
+                title: string | undefined;
+            };
+            yaxis: {
+                fixedrange: boolean;
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                showticklabels: boolean;
+                ticklen: number;
+                title: string | undefined;
+                rangemode: string;
+                type: string;
+                tickfont: {
+                    family: string;
+                    size: number;
+                };
+            };
+            font: {
+                family: string;
+                size: number;
+            };
+        };
+        data(): {
+            type: string;
+            x: readonly number[];
+            y: readonly number[];
+            marker: {
+                color: string;
+            };
+            name: string;
+        }[];
+    }
+}
+
+declare namespace $.$$ {
+}
+
+declare namespace $ {
+    class $visavis_discovery extends $visavis_plot_plotly {
+        pages(): readonly any[];
+        elemental_checked(id: any, next?: any): boolean;
+        elementals_dict(): Record<string, any>;
+        Elementals_check(): $$.$mol_check_list;
+        Elementals(): $mol_labeler;
+        Setup(): $mol_page;
+    }
+}
+
+declare namespace $.$$ {
+    const $visavis_discovery_json: ((val: {
+        payload: {
+            points: readonly (readonly number[])[];
+        };
+        answerto: string;
+    }) => Readonly<{
+        payload: Readonly<{
+            points: readonly (readonly number[])[];
+        }>;
+        answerto: string;
+    }>) & {
+        config: {
+            payload: ((val: {
+                points: readonly (readonly number[])[];
+            }) => Readonly<{
+                points: readonly (readonly number[])[];
+            }>) & {
+                config: {
+                    points: ((val: readonly (readonly number[])[]) => readonly (readonly number[])[]) & {
+                        config: ((val: readonly number[]) => readonly number[]) & {
+                            config: (val: number) => number;
+                            Value: readonly number[];
+                        };
+                        Value: readonly (readonly number[])[];
+                    };
+                };
+                Value: Readonly<{
+                    points: readonly (readonly number[])[];
+                }>;
+            };
+            answerto: (val: string) => string;
+        };
+        Value: Readonly<{
+            payload: Readonly<{
+                points: readonly (readonly number[])[];
+            }>;
+            answerto: string;
+        }>;
+    };
+    class $visavis_discovery extends $.$visavis_discovery {
+        json(): Readonly<{
+            payload: Readonly<{
+                points: readonly (readonly number[])[];
+            }>;
+            answerto: string;
+        }>;
+        elementals_dict(): {
+            readonly num: "atomic number";
+            readonly nump: "periodic number";
+            readonly size: "atomic size";
+            readonly rea: "atomic reactivity";
+            readonly rpp: "pseudopotential radii";
+            readonly rion: "ionic radii";
+            readonly rcov: "covalent radii";
+            readonly rmet: "metallic radii";
+            readonly tmelt: "melting temperature";
+            readonly eneg: "electronegativity";
+        };
+        subscribe_events(): void;
+        layout(): {
+            showlegend: boolean;
+            hovermode: string;
+            xaxis: {
+                showgrid: boolean;
+            };
+            yaxis: {
+                showgrid: boolean;
+            };
+            margin: {
+                l: number;
+                r: number;
+                b: number;
+                t: number;
+                pad: number;
+            };
+            annotations: ({
+                x: number;
+                y: number;
+                xref: string;
+                yref: string;
+                xanchor: string;
+                yanchor: string;
+                text: string;
+                showarrow: boolean;
+                bgcolor: string;
+                font: {
+                    family: string;
+                    size: number;
+                };
+                textangle?: undefined;
+            } | {
+                x: number;
+                y: number;
+                xref: string;
+                yref: string;
+                xanchor: string;
+                yanchor: string;
+                text: string;
+                showarrow: boolean;
+                bgcolor: string;
+                textangle: number;
+                font: {
+                    family: string;
+                    size: number;
+                };
+            })[];
+        };
+        elementals_on(): ("num" | "nump" | "size" | "rea" | "rpp" | "rion" | "rcov" | "rmet" | "tmelt" | "eneg")[];
+        elemental_checked(id: any, next?: any): boolean;
+        data(): {
+            x: any;
+            y: any;
+            text: string[];
+            mode: string;
+            type: string;
+            hoverinfo: string;
+            marker: {
+                size: number;
+                color: string;
+                opacity: number;
+                symbol: string;
+            };
+        }[] | undefined;
+    }
+}
+
+declare namespace $.$$ {
+}
+
+declare namespace $ {
+    class $visavis_eigen extends $visavis_plot_plotly {
+    }
+}
+
+declare namespace $ {
+    function $mol_data_variant<Sub extends $mol_data_value[]>(...sub: Sub): ((val: Parameters<Sub[number]>[0]) => ReturnType<Sub[number]>) & {
+        config: Sub;
+        Value: ReturnType<Sub[number]>;
+    };
+}
+
+declare namespace $.$$ {
+    const Bands_matrix: ((val: {
+        bands: readonly (readonly number[])[];
+        kpoints: readonly (readonly number[])[];
+    }) => Readonly<{
+        bands: readonly (readonly number[])[];
+        kpoints: readonly (readonly number[])[];
+    }>) & {
+        config: {
+            bands: ((val: readonly (readonly number[])[]) => readonly (readonly number[])[]) & {
+                config: ((val: readonly number[]) => readonly number[]) & {
+                    config: (val: number) => number;
+                    Value: readonly number[];
+                };
+                Value: readonly (readonly number[])[];
+            };
+            kpoints: ((val: readonly (readonly number[])[]) => readonly (readonly number[])[]) & {
+                config: ((val: readonly number[]) => readonly number[]) & {
+                    config: (val: number) => number;
+                    Value: readonly number[];
+                };
+                Value: readonly (readonly number[])[];
+            };
+        };
+        Value: Readonly<{
+            bands: readonly (readonly number[])[];
+            kpoints: readonly (readonly number[])[];
+        }>;
+    };
+    type Bands_matrix = ReturnType<typeof Bands_matrix>;
+    const Dos_matrix: ((val: {
+        dos: readonly number[];
+        levels: readonly number[];
+    }) => Readonly<{
+        dos: readonly number[];
+        levels: readonly number[];
+    }>) & {
+        config: {
+            dos: ((val: readonly number[]) => readonly number[]) & {
+                config: (val: number) => number;
+                Value: readonly number[];
+            };
+            levels: ((val: readonly number[]) => readonly number[]) & {
+                config: (val: number) => number;
+                Value: readonly number[];
+            };
+        };
+        Value: Readonly<{
+            dos: readonly number[];
+            levels: readonly number[];
+        }>;
+    };
+    type Dos_matrix = ReturnType<typeof Dos_matrix>;
+    export const $visavis_eigen_json: ((val: {
+        sample: {
+            material: {
+                chemical_formula: string;
+                chemical_elements: readonly string[];
+                condition: readonly {
+                    scalar: readonly {
+                        value: number;
+                    }[];
+                    name: string;
+                    units?: string | undefined;
+                }[];
+                phase: string;
+                phase_id: number;
+                entry: string;
+                object_repr?: string | undefined;
+            };
+            measurement: readonly {
+                data_type: string;
+                property: {
+                    units: string;
+                    scalar?: string | number | undefined;
+                    matrix: {
+                        bands: readonly (readonly number[])[];
+                        kpoints: readonly (readonly number[])[];
+                    } | {
+                        dos: readonly number[];
+                        levels: readonly number[];
+                    } | {
+                        bands: readonly (readonly number[])[];
+                        kpoints: readonly (readonly number[])[];
+                        dos: readonly number[];
+                        levels: readonly number[];
+                    } | {
+                        dos: readonly number[];
+                        levels: readonly number[];
+                        bands: readonly (readonly number[])[];
+                        kpoints: readonly (readonly number[])[];
+                    };
+                    name: string;
+                    category: string;
+                    domain: string;
+                };
+                condition?: readonly {
+                    units: string;
+                    scalar: number;
+                    name: string;
+                    refers_to?: string | undefined;
+                }[] | undefined;
+                raw_data?: string | undefined;
+            }[];
+        };
+        version: string;
+        object_type: string;
+        reference: {
+            entry: string;
+            phase?: string | undefined;
+        };
+    }) => Readonly<{
+        sample: Readonly<{
+            material: Readonly<{
+                chemical_formula: string;
+                chemical_elements: readonly string[];
+                condition: readonly Readonly<{
+                    scalar: readonly Readonly<{
+                        value: number;
+                    }>[];
+                    name: string;
+                    units?: string | undefined;
+                }>[];
+                phase: string;
+                phase_id: number;
+                entry: string;
+                object_repr?: string | undefined;
+            }>;
+            measurement: readonly Readonly<{
+                data_type: string;
+                property: Readonly<{
+                    units: string;
+                    scalar?: string | number | undefined;
+                    matrix: Readonly<{
+                        bands: readonly (readonly number[])[];
+                        kpoints: readonly (readonly number[])[];
+                    }> | Readonly<{
+                        dos: readonly number[];
+                        levels: readonly number[];
+                    }> | {
+                        readonly bands: readonly (readonly number[])[];
+                        readonly kpoints: readonly (readonly number[])[];
+                        readonly dos: readonly number[];
+                        readonly levels: readonly number[];
+                    } | {
+                        readonly dos: readonly number[];
+                        readonly levels: readonly number[];
+                        readonly bands: readonly (readonly number[])[];
+                        readonly kpoints: readonly (readonly number[])[];
+                    };
+                    name: string;
+                    category: string;
+                    domain: string;
+                }>;
+                condition?: readonly Readonly<{
+                    units: string;
+                    scalar: number;
+                    name: string;
+                    refers_to?: string | undefined;
+                }>[] | undefined;
+                raw_data?: string | undefined;
+            }>[];
+        }>;
+        version: string;
+        object_type: string;
+        reference: Readonly<{
+            entry: string;
+            phase?: string | undefined;
+        }>;
+    }>) & {
+        config: {
+            sample: ((val: {
+                material: {
+                    chemical_formula: string;
+                    chemical_elements: readonly string[];
+                    condition: readonly {
+                        scalar: readonly {
+                            value: number;
+                        }[];
+                        name: string;
+                        units?: string | undefined;
+                    }[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    object_repr?: string | undefined;
+                };
+                measurement: readonly {
+                    data_type: string;
+                    property: {
+                        units: string;
+                        scalar?: string | number | undefined;
+                        matrix: {
+                            bands: readonly (readonly number[])[];
+                            kpoints: readonly (readonly number[])[];
+                        } | {
+                            dos: readonly number[];
+                            levels: readonly number[];
+                        } | {
+                            bands: readonly (readonly number[])[];
+                            kpoints: readonly (readonly number[])[];
+                            dos: readonly number[];
+                            levels: readonly number[];
+                        } | {
+                            dos: readonly number[];
+                            levels: readonly number[];
+                            bands: readonly (readonly number[])[];
+                            kpoints: readonly (readonly number[])[];
+                        };
+                        name: string;
+                        category: string;
+                        domain: string;
+                    };
+                    condition?: readonly {
+                        units: string;
+                        scalar: number;
+                        name: string;
+                        refers_to?: string | undefined;
+                    }[] | undefined;
+                    raw_data?: string | undefined;
+                }[];
+            }) => Readonly<{
+                material: Readonly<{
+                    chemical_formula: string;
+                    chemical_elements: readonly string[];
+                    condition: readonly Readonly<{
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                        name: string;
+                        units?: string | undefined;
+                    }>[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    object_repr?: string | undefined;
+                }>;
+                measurement: readonly Readonly<{
+                    data_type: string;
+                    property: Readonly<{
+                        units: string;
+                        scalar?: string | number | undefined;
+                        matrix: Readonly<{
+                            bands: readonly (readonly number[])[];
+                            kpoints: readonly (readonly number[])[];
+                        }> | Readonly<{
+                            dos: readonly number[];
+                            levels: readonly number[];
+                        }> | {
+                            readonly bands: readonly (readonly number[])[];
+                            readonly kpoints: readonly (readonly number[])[];
+                            readonly dos: readonly number[];
+                            readonly levels: readonly number[];
+                        } | {
+                            readonly dos: readonly number[];
+                            readonly levels: readonly number[];
+                            readonly bands: readonly (readonly number[])[];
+                            readonly kpoints: readonly (readonly number[])[];
+                        };
+                        name: string;
+                        category: string;
+                        domain: string;
+                    }>;
+                    condition?: readonly Readonly<{
+                        units: string;
+                        scalar: number;
+                        name: string;
+                        refers_to?: string | undefined;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
+                }>[];
+            }>) & {
+                config: {
+                    material: ((val: {
+                        chemical_formula: string;
+                        chemical_elements: readonly string[];
+                        condition: readonly {
+                            scalar: readonly {
+                                value: number;
+                            }[];
+                            name: string;
+                            units?: string | undefined;
+                        }[];
+                        phase: string;
+                        phase_id: number;
+                        entry: string;
+                        object_repr?: string | undefined;
+                    }) => Readonly<{
+                        chemical_formula: string;
+                        chemical_elements: readonly string[];
+                        condition: readonly Readonly<{
+                            scalar: readonly Readonly<{
+                                value: number;
+                            }>[];
+                            name: string;
+                            units?: string | undefined;
+                        }>[];
+                        phase: string;
+                        phase_id: number;
+                        entry: string;
+                        object_repr?: string | undefined;
+                    }>) & {
+                        config: {
+                            chemical_formula: (val: string) => string;
+                            chemical_elements: ((val: readonly string[]) => readonly string[]) & {
+                                config: (val: string) => string;
+                                Value: readonly string[];
+                            };
+                            condition: ((val: readonly {
+                                scalar: readonly {
+                                    value: number;
+                                }[];
+                                name: string;
+                                units?: string | undefined;
+                            }[]) => readonly Readonly<{
+                                scalar: readonly Readonly<{
+                                    value: number;
+                                }>[];
+                                name: string;
+                                units?: string | undefined;
+                            }>[]) & {
+                                config: ((val: {
+                                    scalar: readonly {
+                                        value: number;
+                                    }[];
+                                    name: string;
+                                    units?: string | undefined;
+                                }) => Readonly<{
+                                    scalar: readonly Readonly<{
+                                        value: number;
+                                    }>[];
+                                    name: string;
+                                    units?: string | undefined;
+                                }>) & {
+                                    config: {
+                                        scalar: ((val: readonly {
+                                            value: number;
+                                        }[]) => readonly Readonly<{
+                                            value: number;
+                                        }>[]) & {
+                                            config: ((val: {
+                                                value: number;
+                                            }) => Readonly<{
+                                                value: number;
+                                            }>) & {
+                                                config: {
+                                                    value: (val: number) => number;
+                                                };
+                                                Value: Readonly<{
+                                                    value: number;
+                                                }>;
+                                            };
+                                            Value: readonly Readonly<{
+                                                value: number;
+                                            }>[];
+                                        };
+                                        name: (val: string) => string;
+                                        units: ((val: string | undefined) => string | undefined) & {
+                                            config: {
+                                                sub: (val: string) => string;
+                                                fallback: (() => string) | undefined;
+                                            };
+                                            Value: string | undefined;
+                                        };
+                                    };
+                                    Value: Readonly<{
+                                        scalar: readonly Readonly<{
+                                            value: number;
+                                        }>[];
+                                        name: string;
+                                        units?: string | undefined;
+                                    }>;
+                                };
+                                Value: readonly Readonly<{
+                                    scalar: readonly Readonly<{
+                                        value: number;
+                                    }>[];
+                                    name: string;
+                                    units?: string | undefined;
+                                }>[];
+                            };
+                            phase: (val: string) => string;
+                            phase_id: (val: number) => number;
+                            entry: (val: string) => string;
+                            object_repr: ((val: string | undefined) => string | undefined) & {
+                                config: {
+                                    sub: (val: string) => string;
+                                    fallback: (() => string) | undefined;
+                                };
+                                Value: string | undefined;
+                            };
+                        };
+                        Value: Readonly<{
+                            chemical_formula: string;
+                            chemical_elements: readonly string[];
+                            condition: readonly Readonly<{
+                                scalar: readonly Readonly<{
+                                    value: number;
+                                }>[];
+                                name: string;
+                                units?: string | undefined;
+                            }>[];
+                            phase: string;
+                            phase_id: number;
+                            entry: string;
+                            object_repr?: string | undefined;
+                        }>;
+                    };
+                    measurement: ((val: readonly {
+                        data_type: string;
+                        property: {
+                            units: string;
+                            scalar?: string | number | undefined;
+                            matrix: {
+                                bands: readonly (readonly number[])[];
+                                kpoints: readonly (readonly number[])[];
+                            } | {
+                                dos: readonly number[];
+                                levels: readonly number[];
+                            } | {
+                                bands: readonly (readonly number[])[];
+                                kpoints: readonly (readonly number[])[];
+                                dos: readonly number[];
+                                levels: readonly number[];
+                            } | {
+                                dos: readonly number[];
+                                levels: readonly number[];
+                                bands: readonly (readonly number[])[];
+                                kpoints: readonly (readonly number[])[];
+                            };
+                            name: string;
+                            category: string;
+                            domain: string;
+                        };
+                        condition?: readonly {
+                            units: string;
+                            scalar: number;
+                            name: string;
+                            refers_to?: string | undefined;
+                        }[] | undefined;
+                        raw_data?: string | undefined;
+                    }[]) => readonly Readonly<{
+                        data_type: string;
+                        property: Readonly<{
+                            units: string;
+                            scalar?: string | number | undefined;
+                            matrix: Readonly<{
+                                bands: readonly (readonly number[])[];
+                                kpoints: readonly (readonly number[])[];
+                            }> | Readonly<{
+                                dos: readonly number[];
+                                levels: readonly number[];
+                            }> | {
+                                readonly bands: readonly (readonly number[])[];
+                                readonly kpoints: readonly (readonly number[])[];
+                                readonly dos: readonly number[];
+                                readonly levels: readonly number[];
+                            } | {
+                                readonly dos: readonly number[];
+                                readonly levels: readonly number[];
+                                readonly bands: readonly (readonly number[])[];
+                                readonly kpoints: readonly (readonly number[])[];
+                            };
+                            name: string;
+                            category: string;
+                            domain: string;
+                        }>;
+                        condition?: readonly Readonly<{
+                            units: string;
+                            scalar: number;
+                            name: string;
+                            refers_to?: string | undefined;
+                        }>[] | undefined;
+                        raw_data?: string | undefined;
+                    }>[]) & {
+                        config: ((val: {
+                            data_type: string;
+                            property: {
+                                units: string;
+                                scalar?: string | number | undefined;
+                                matrix: {
+                                    bands: readonly (readonly number[])[];
+                                    kpoints: readonly (readonly number[])[];
+                                } | {
+                                    dos: readonly number[];
+                                    levels: readonly number[];
+                                } | {
+                                    bands: readonly (readonly number[])[];
+                                    kpoints: readonly (readonly number[])[];
+                                    dos: readonly number[];
+                                    levels: readonly number[];
+                                } | {
+                                    dos: readonly number[];
+                                    levels: readonly number[];
+                                    bands: readonly (readonly number[])[];
+                                    kpoints: readonly (readonly number[])[];
+                                };
+                                name: string;
+                                category: string;
+                                domain: string;
+                            };
+                            condition?: readonly {
+                                units: string;
+                                scalar: number;
+                                name: string;
+                                refers_to?: string | undefined;
+                            }[] | undefined;
+                            raw_data?: string | undefined;
+                        }) => Readonly<{
+                            data_type: string;
+                            property: Readonly<{
+                                units: string;
+                                scalar?: string | number | undefined;
+                                matrix: Readonly<{
+                                    bands: readonly (readonly number[])[];
+                                    kpoints: readonly (readonly number[])[];
+                                }> | Readonly<{
+                                    dos: readonly number[];
+                                    levels: readonly number[];
+                                }> | {
+                                    readonly bands: readonly (readonly number[])[];
+                                    readonly kpoints: readonly (readonly number[])[];
+                                    readonly dos: readonly number[];
+                                    readonly levels: readonly number[];
+                                } | {
+                                    readonly dos: readonly number[];
+                                    readonly levels: readonly number[];
+                                    readonly bands: readonly (readonly number[])[];
+                                    readonly kpoints: readonly (readonly number[])[];
+                                };
+                                name: string;
+                                category: string;
+                                domain: string;
+                            }>;
+                            condition?: readonly Readonly<{
+                                units: string;
+                                scalar: number;
+                                name: string;
+                                refers_to?: string | undefined;
+                            }>[] | undefined;
+                            raw_data?: string | undefined;
+                        }>) & {
+                            config: {
+                                data_type: (val: string) => string;
+                                property: ((val: {
+                                    units: string;
+                                    scalar?: string | number | undefined;
+                                    matrix: {
+                                        bands: readonly (readonly number[])[];
+                                        kpoints: readonly (readonly number[])[];
+                                    } | {
+                                        dos: readonly number[];
+                                        levels: readonly number[];
+                                    } | {
+                                        bands: readonly (readonly number[])[];
+                                        kpoints: readonly (readonly number[])[];
+                                        dos: readonly number[];
+                                        levels: readonly number[];
+                                    } | {
+                                        dos: readonly number[];
+                                        levels: readonly number[];
+                                        bands: readonly (readonly number[])[];
+                                        kpoints: readonly (readonly number[])[];
+                                    };
+                                    name: string;
+                                    category: string;
+                                    domain: string;
+                                }) => Readonly<{
+                                    units: string;
+                                    scalar?: string | number | undefined;
+                                    matrix: Readonly<{
+                                        bands: readonly (readonly number[])[];
+                                        kpoints: readonly (readonly number[])[];
+                                    }> | Readonly<{
+                                        dos: readonly number[];
+                                        levels: readonly number[];
+                                    }> | {
+                                        readonly bands: readonly (readonly number[])[];
+                                        readonly kpoints: readonly (readonly number[])[];
+                                        readonly dos: readonly number[];
+                                        readonly levels: readonly number[];
+                                    } | {
+                                        readonly dos: readonly number[];
+                                        readonly levels: readonly number[];
+                                        readonly bands: readonly (readonly number[])[];
+                                        readonly kpoints: readonly (readonly number[])[];
+                                    };
+                                    name: string;
+                                    category: string;
+                                    domain: string;
+                                }>) & {
+                                    config: {
+                                        units: (val: string) => string;
+                                        scalar: ((val: string | number | undefined) => string | number | undefined) & {
+                                            config: {
+                                                sub: ((val: string | number) => string | number) & {
+                                                    config: [(val: string) => string, (val: number) => number];
+                                                    Value: string | number;
+                                                };
+                                                fallback: (() => string | number) | undefined;
+                                            };
+                                            Value: string | number | undefined;
+                                        };
+                                        matrix: ((val: {
+                                            bands: readonly (readonly number[])[];
+                                            kpoints: readonly (readonly number[])[];
+                                        } | {
+                                            dos: readonly number[];
+                                            levels: readonly number[];
+                                        }) => Readonly<{
+                                            bands: readonly (readonly number[])[];
+                                            kpoints: readonly (readonly number[])[];
+                                        }> | Readonly<{
+                                            dos: readonly number[];
+                                            levels: readonly number[];
+                                        }>) & {
+                                            config: [((val: {
+                                                bands: readonly (readonly number[])[];
+                                                kpoints: readonly (readonly number[])[];
+                                            }) => Readonly<{
+                                                bands: readonly (readonly number[])[];
+                                                kpoints: readonly (readonly number[])[];
+                                            }>) & {
+                                                config: {
+                                                    bands: ((val: readonly (readonly number[])[]) => readonly (readonly number[])[]) & {
+                                                        config: ((val: readonly number[]) => readonly number[]) & {
+                                                            config: (val: number) => number;
+                                                            Value: readonly number[];
+                                                        };
+                                                        Value: readonly (readonly number[])[];
+                                                    };
+                                                    kpoints: ((val: readonly (readonly number[])[]) => readonly (readonly number[])[]) & {
+                                                        config: ((val: readonly number[]) => readonly number[]) & {
+                                                            config: (val: number) => number;
+                                                            Value: readonly number[];
+                                                        };
+                                                        Value: readonly (readonly number[])[];
+                                                    };
+                                                };
+                                                Value: Readonly<{
+                                                    bands: readonly (readonly number[])[];
+                                                    kpoints: readonly (readonly number[])[];
+                                                }>;
+                                            }, ((val: {
+                                                dos: readonly number[];
+                                                levels: readonly number[];
+                                            }) => Readonly<{
+                                                dos: readonly number[];
+                                                levels: readonly number[];
+                                            }>) & {
+                                                config: {
+                                                    dos: ((val: readonly number[]) => readonly number[]) & {
+                                                        config: (val: number) => number;
+                                                        Value: readonly number[];
+                                                    };
+                                                    levels: ((val: readonly number[]) => readonly number[]) & {
+                                                        config: (val: number) => number;
+                                                        Value: readonly number[];
+                                                    };
+                                                };
+                                                Value: Readonly<{
+                                                    dos: readonly number[];
+                                                    levels: readonly number[];
+                                                }>;
+                                            }];
+                                            Value: Readonly<{
+                                                bands: readonly (readonly number[])[];
+                                                kpoints: readonly (readonly number[])[];
+                                            }> | Readonly<{
+                                                dos: readonly number[];
+                                                levels: readonly number[];
+                                            }>;
+                                        };
+                                        name: (val: string) => string;
+                                        category: (val: string) => string;
+                                        domain: (val: string) => string;
+                                    };
+                                    Value: Readonly<{
+                                        units: string;
+                                        scalar?: string | number | undefined;
+                                        matrix: Readonly<{
+                                            bands: readonly (readonly number[])[];
+                                            kpoints: readonly (readonly number[])[];
+                                        }> | Readonly<{
+                                            dos: readonly number[];
+                                            levels: readonly number[];
+                                        }> | {
+                                            readonly bands: readonly (readonly number[])[];
+                                            readonly kpoints: readonly (readonly number[])[];
+                                            readonly dos: readonly number[];
+                                            readonly levels: readonly number[];
+                                        } | {
+                                            readonly dos: readonly number[];
+                                            readonly levels: readonly number[];
+                                            readonly bands: readonly (readonly number[])[];
+                                            readonly kpoints: readonly (readonly number[])[];
+                                        };
+                                        name: string;
+                                        category: string;
+                                        domain: string;
+                                    }>;
+                                };
+                                condition: ((val: readonly {
+                                    units: string;
+                                    scalar: number;
+                                    name: string;
+                                    refers_to?: string | undefined;
+                                }[] | undefined) => readonly Readonly<{
+                                    units: string;
+                                    scalar: number;
+                                    name: string;
+                                    refers_to?: string | undefined;
+                                }>[] | undefined) & {
+                                    config: {
+                                        sub: ((val: readonly {
+                                            units: string;
+                                            scalar: number;
+                                            name: string;
+                                            refers_to?: string | undefined;
+                                        }[]) => readonly Readonly<{
+                                            units: string;
+                                            scalar: number;
+                                            name: string;
+                                            refers_to?: string | undefined;
+                                        }>[]) & {
+                                            config: ((val: {
+                                                units: string;
+                                                scalar: number;
+                                                name: string;
+                                                refers_to?: string | undefined;
+                                            }) => Readonly<{
+                                                units: string;
+                                                scalar: number;
+                                                name: string;
+                                                refers_to?: string | undefined;
+                                            }>) & {
+                                                config: {
+                                                    units: (val: string) => string;
+                                                    scalar: (val: number) => number;
+                                                    name: (val: string) => string;
+                                                    refers_to: ((val: string | undefined) => string | undefined) & {
+                                                        config: {
+                                                            sub: (val: string) => string;
+                                                            fallback: (() => string) | undefined;
+                                                        };
+                                                        Value: string | undefined;
+                                                    };
+                                                };
+                                                Value: Readonly<{
+                                                    units: string;
+                                                    scalar: number;
+                                                    name: string;
+                                                    refers_to?: string | undefined;
+                                                }>;
+                                            };
+                                            Value: readonly Readonly<{
+                                                units: string;
+                                                scalar: number;
+                                                name: string;
+                                                refers_to?: string | undefined;
+                                            }>[];
+                                        };
+                                        fallback: (() => readonly Readonly<{
+                                            units: string;
+                                            scalar: number;
+                                            name: string;
+                                            refers_to?: string | undefined;
+                                        }>[]) | undefined;
+                                    };
+                                    Value: readonly Readonly<{
+                                        units: string;
+                                        scalar: number;
+                                        name: string;
+                                        refers_to?: string | undefined;
+                                    }>[] | undefined;
+                                };
+                                raw_data: ((val: string | undefined) => string | undefined) & {
+                                    config: {
+                                        sub: (val: string) => string;
+                                        fallback: (() => string) | undefined;
+                                    };
+                                    Value: string | undefined;
+                                };
+                            };
+                            Value: Readonly<{
+                                data_type: string;
+                                property: Readonly<{
+                                    units: string;
+                                    scalar?: string | number | undefined;
+                                    matrix: Readonly<{
+                                        bands: readonly (readonly number[])[];
+                                        kpoints: readonly (readonly number[])[];
+                                    }> | Readonly<{
+                                        dos: readonly number[];
+                                        levels: readonly number[];
+                                    }> | {
+                                        readonly bands: readonly (readonly number[])[];
+                                        readonly kpoints: readonly (readonly number[])[];
+                                        readonly dos: readonly number[];
+                                        readonly levels: readonly number[];
+                                    } | {
+                                        readonly dos: readonly number[];
+                                        readonly levels: readonly number[];
+                                        readonly bands: readonly (readonly number[])[];
+                                        readonly kpoints: readonly (readonly number[])[];
+                                    };
+                                    name: string;
+                                    category: string;
+                                    domain: string;
+                                }>;
+                                condition?: readonly Readonly<{
+                                    units: string;
+                                    scalar: number;
+                                    name: string;
+                                    refers_to?: string | undefined;
+                                }>[] | undefined;
+                                raw_data?: string | undefined;
+                            }>;
+                        };
+                        Value: readonly Readonly<{
+                            data_type: string;
+                            property: Readonly<{
+                                units: string;
+                                scalar?: string | number | undefined;
+                                matrix: Readonly<{
+                                    bands: readonly (readonly number[])[];
+                                    kpoints: readonly (readonly number[])[];
+                                }> | Readonly<{
+                                    dos: readonly number[];
+                                    levels: readonly number[];
+                                }> | {
+                                    readonly bands: readonly (readonly number[])[];
+                                    readonly kpoints: readonly (readonly number[])[];
+                                    readonly dos: readonly number[];
+                                    readonly levels: readonly number[];
+                                } | {
+                                    readonly dos: readonly number[];
+                                    readonly levels: readonly number[];
+                                    readonly bands: readonly (readonly number[])[];
+                                    readonly kpoints: readonly (readonly number[])[];
+                                };
+                                name: string;
+                                category: string;
+                                domain: string;
+                            }>;
+                            condition?: readonly Readonly<{
+                                units: string;
+                                scalar: number;
+                                name: string;
+                                refers_to?: string | undefined;
+                            }>[] | undefined;
+                            raw_data?: string | undefined;
+                        }>[];
+                    };
+                };
+                Value: Readonly<{
+                    material: Readonly<{
+                        chemical_formula: string;
+                        chemical_elements: readonly string[];
+                        condition: readonly Readonly<{
+                            scalar: readonly Readonly<{
+                                value: number;
+                            }>[];
+                            name: string;
+                            units?: string | undefined;
+                        }>[];
+                        phase: string;
+                        phase_id: number;
+                        entry: string;
+                        object_repr?: string | undefined;
+                    }>;
+                    measurement: readonly Readonly<{
+                        data_type: string;
+                        property: Readonly<{
+                            units: string;
+                            scalar?: string | number | undefined;
+                            matrix: Readonly<{
+                                bands: readonly (readonly number[])[];
+                                kpoints: readonly (readonly number[])[];
+                            }> | Readonly<{
+                                dos: readonly number[];
+                                levels: readonly number[];
+                            }> | {
+                                readonly bands: readonly (readonly number[])[];
+                                readonly kpoints: readonly (readonly number[])[];
+                                readonly dos: readonly number[];
+                                readonly levels: readonly number[];
+                            } | {
+                                readonly dos: readonly number[];
+                                readonly levels: readonly number[];
+                                readonly bands: readonly (readonly number[])[];
+                                readonly kpoints: readonly (readonly number[])[];
+                            };
+                            name: string;
+                            category: string;
+                            domain: string;
+                        }>;
+                        condition?: readonly Readonly<{
+                            units: string;
+                            scalar: number;
+                            name: string;
+                            refers_to?: string | undefined;
+                        }>[] | undefined;
+                        raw_data?: string | undefined;
+                    }>[];
+                }>;
+            };
+            version: (val: string) => string;
+            object_type: (val: string) => string;
+            reference: ((val: {
+                entry: string;
+                phase?: string | undefined;
+            }) => Readonly<{
+                entry: string;
+                phase?: string | undefined;
+            }>) & {
+                config: {
+                    entry: (val: string) => string;
+                    phase: ((val: string | undefined) => string | undefined) & {
+                        config: {
+                            sub: (val: string) => string;
+                            fallback: (() => string) | undefined;
+                        };
+                        Value: string | undefined;
+                    };
+                };
+                Value: Readonly<{
+                    entry: string;
+                    phase?: string | undefined;
+                }>;
+            };
+        };
+        Value: Readonly<{
+            sample: Readonly<{
+                material: Readonly<{
+                    chemical_formula: string;
+                    chemical_elements: readonly string[];
+                    condition: readonly Readonly<{
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                        name: string;
+                        units?: string | undefined;
+                    }>[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    object_repr?: string | undefined;
+                }>;
+                measurement: readonly Readonly<{
+                    data_type: string;
+                    property: Readonly<{
+                        units: string;
+                        scalar?: string | number | undefined;
+                        matrix: Readonly<{
+                            bands: readonly (readonly number[])[];
+                            kpoints: readonly (readonly number[])[];
+                        }> | Readonly<{
+                            dos: readonly number[];
+                            levels: readonly number[];
+                        }> | {
+                            readonly bands: readonly (readonly number[])[];
+                            readonly kpoints: readonly (readonly number[])[];
+                            readonly dos: readonly number[];
+                            readonly levels: readonly number[];
+                        } | {
+                            readonly dos: readonly number[];
+                            readonly levels: readonly number[];
+                            readonly bands: readonly (readonly number[])[];
+                            readonly kpoints: readonly (readonly number[])[];
+                        };
+                        name: string;
+                        category: string;
+                        domain: string;
+                    }>;
+                    condition?: readonly Readonly<{
+                        units: string;
+                        scalar: number;
+                        name: string;
+                        refers_to?: string | undefined;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
+                }>[];
+            }>;
+            version: string;
+            object_type: string;
+            reference: Readonly<{
+                entry: string;
+                phase?: string | undefined;
+            }>;
+        }>;
+    };
+    export class $visavis_eigen extends $.$visavis_eigen {
+        json(): Readonly<{
+            sample: Readonly<{
+                material: Readonly<{
+                    chemical_formula: string;
+                    chemical_elements: readonly string[];
+                    condition: readonly Readonly<{
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                        name: string;
+                        units?: string | undefined;
+                    }>[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    object_repr?: string | undefined;
+                }>;
+                measurement: readonly Readonly<{
+                    data_type: string;
+                    property: Readonly<{
+                        units: string;
+                        scalar?: string | number | undefined;
+                        matrix: Readonly<{
+                            bands: readonly (readonly number[])[];
+                            kpoints: readonly (readonly number[])[];
+                        }> | Readonly<{
+                            dos: readonly number[];
+                            levels: readonly number[];
+                        }> | {
+                            readonly bands: readonly (readonly number[])[];
+                            readonly kpoints: readonly (readonly number[])[];
+                            readonly dos: readonly number[];
+                            readonly levels: readonly number[];
+                        } | {
+                            readonly dos: readonly number[];
+                            readonly levels: readonly number[];
+                            readonly bands: readonly (readonly number[])[];
+                            readonly kpoints: readonly (readonly number[])[];
+                        };
+                        name: string;
+                        category: string;
+                        domain: string;
+                    }>;
+                    condition?: readonly Readonly<{
+                        units: string;
+                        scalar: number;
+                        name: string;
+                        refers_to?: string | undefined;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
+                }>[];
+            }>;
+            version: string;
+            object_type: string;
+            reference: Readonly<{
+                entry: string;
+                phase?: string | undefined;
+            }>;
+        }>;
+        bands_matrix(): Bands_matrix | null;
+        dos_matrix(): Dos_matrix | null;
+        subscribe_events(): void;
+        data(): {
+            x: any;
+            y: readonly number[];
+            mode: string;
+            type: string;
+            marker: {
+                color: string;
+            };
+        }[];
+        layout(): {
+            showlegend: boolean;
+            xaxis: Object;
+            yaxis: {
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                showticklabels: boolean;
+                zeroline: boolean;
+                zerolinecolor: string;
+                zerolinewidth: number;
+                ticklen: number;
+                title: string;
+            };
+            font: {
+                family: string;
+                size: number;
+            };
+        };
+    }
+    export {};
+}
+
+declare namespace $ {
+    class $visavis_pie extends $visavis_plot_plotly {
+        colorset(): readonly any[];
+    }
+}
+
+declare namespace $ {
+    function $mol_data_enum<Dict extends Record<number | string, number | string>>(name: string, dict: Dict): ((value: Dict[keyof Dict]) => Dict[keyof Dict]) & {
+        config: {
+            name: string;
+            dict: Dict;
+        };
+        Value: Dict[keyof Dict];
+    };
+}
+
+declare namespace $.$$ {
+    const $visavis_pie_json: ((val: {
+        payload: readonly {
+            facet: "props" | "elements" | "classes" | "lattices";
+            value: string;
+            count: number;
+        }[];
+        total_count: number;
+    }) => Readonly<{
+        payload: readonly Readonly<{
+            facet: "props" | "elements" | "classes" | "lattices";
+            value: string;
+            count: number;
+        }>[];
+        total_count: number;
+    }>) & {
+        config: {
+            payload: ((val: readonly {
+                facet: "props" | "elements" | "classes" | "lattices";
+                value: string;
+                count: number;
+            }[]) => readonly Readonly<{
+                facet: "props" | "elements" | "classes" | "lattices";
+                value: string;
+                count: number;
+            }>[]) & {
+                config: ((val: {
+                    facet: "props" | "elements" | "classes" | "lattices";
+                    value: string;
+                    count: number;
+                }) => Readonly<{
+                    facet: "props" | "elements" | "classes" | "lattices";
+                    value: string;
+                    count: number;
+                }>) & {
+                    config: {
+                        facet: ((value: "props" | "elements" | "classes" | "lattices") => "props" | "elements" | "classes" | "lattices") & {
+                            config: {
+                                name: string;
+                                dict: {
+                                    readonly props: "props";
+                                    readonly elements: "elements";
+                                    readonly classes: "classes";
+                                    readonly lattices: "lattices";
+                                };
+                            };
+                            Value: "props" | "elements" | "classes" | "lattices";
+                        };
+                        value: (val: string) => string;
+                        count: (val: number) => number;
+                    };
+                    Value: Readonly<{
+                        facet: "props" | "elements" | "classes" | "lattices";
+                        value: string;
+                        count: number;
+                    }>;
+                };
+                Value: readonly Readonly<{
+                    facet: "props" | "elements" | "classes" | "lattices";
+                    value: string;
+                    count: number;
+                }>[];
+            };
+            total_count: (val: number) => number;
+        };
+        Value: Readonly<{
+            payload: readonly Readonly<{
+                facet: "props" | "elements" | "classes" | "lattices";
+                value: string;
+                count: number;
+            }>[];
+            total_count: number;
+        }>;
+    };
+    class $visavis_pie extends $.$visavis_pie {
+        json(): Readonly<{
+            payload: readonly Readonly<{
+                facet: "props" | "elements" | "classes" | "lattices";
+                value: string;
+                count: number;
+            }>[];
+            total_count: number;
+        }>;
+        subscribe_events(): void;
+        layout(): {
+            showlegend: boolean;
+            font: {
+                family: string;
+            };
+            annotations: ({
+                text: string;
+            } & {
+                x: number;
+                y: number;
+            } & {
+                showarrow: boolean;
+                font: {
+                    size: number;
+                    family: string;
+                };
+                borderpad: number;
+                bgcolor: string;
+            })[];
+        };
+        xy_domains(): (number[][][] | null)[];
+        enter_metrics(): number;
+        tot_count(): number;
+        data(): any[];
+    }
+}
+
+declare namespace $ {
+    class $visavis_scatter extends $visavis_plot_plotly {
+    }
+}
+
+declare namespace $.$$ {
+    const $visavis_scatter_json: ((val: {
+        sample: {
+            material: {
+                chemical_formula: string;
+                chemical_elements: readonly string[];
+                condition: readonly {
+                    scalar: readonly {
+                        value: number;
+                    }[];
+                    name: string;
+                    units?: string | undefined;
+                }[];
+                phase: string;
+                phase_id: number;
+                entry: string;
+                object_repr?: string | undefined;
+            };
+            measurement: readonly {
+                data_type: string;
+                property: {
+                    units: string;
+                    scalar?: string | number | undefined;
+                    matrix: readonly (readonly number[])[];
+                    name: string;
+                    category: string;
+                    domain: string;
+                };
+                condition?: readonly {
+                    units: string;
+                    scalar: number;
+                    name: string;
+                    refers_to?: string | undefined;
+                }[] | undefined;
+                raw_data?: string | undefined;
+            }[];
+        };
+        version: string;
+        object_type: string;
+        reference: {
+            entry: string;
+            phase?: string | undefined;
+        };
+    }) => Readonly<{
+        sample: Readonly<{
+            material: Readonly<{
+                chemical_formula: string;
+                chemical_elements: readonly string[];
+                condition: readonly Readonly<{
+                    scalar: readonly Readonly<{
+                        value: number;
+                    }>[];
+                    name: string;
+                    units?: string | undefined;
+                }>[];
+                phase: string;
+                phase_id: number;
+                entry: string;
+                object_repr?: string | undefined;
+            }>;
+            measurement: readonly Readonly<{
+                data_type: string;
+                property: Readonly<{
+                    units: string;
+                    scalar?: string | number | undefined;
+                    matrix: readonly (readonly number[])[];
+                    name: string;
+                    category: string;
+                    domain: string;
+                }>;
+                condition?: readonly Readonly<{
+                    units: string;
+                    scalar: number;
+                    name: string;
+                    refers_to?: string | undefined;
+                }>[] | undefined;
+                raw_data?: string | undefined;
+            }>[];
+        }>;
+        version: string;
+        object_type: string;
+        reference: Readonly<{
+            entry: string;
+            phase?: string | undefined;
+        }>;
+    }>) & {
+        config: {
+            sample: ((val: {
+                material: {
+                    chemical_formula: string;
+                    chemical_elements: readonly string[];
+                    condition: readonly {
+                        scalar: readonly {
+                            value: number;
+                        }[];
+                        name: string;
+                        units?: string | undefined;
+                    }[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    object_repr?: string | undefined;
+                };
+                measurement: readonly {
+                    data_type: string;
+                    property: {
+                        units: string;
+                        scalar?: string | number | undefined;
+                        matrix: readonly (readonly number[])[];
+                        name: string;
+                        category: string;
+                        domain: string;
+                    };
+                    condition?: readonly {
+                        units: string;
+                        scalar: number;
+                        name: string;
+                        refers_to?: string | undefined;
+                    }[] | undefined;
+                    raw_data?: string | undefined;
+                }[];
+            }) => Readonly<{
+                material: Readonly<{
+                    chemical_formula: string;
+                    chemical_elements: readonly string[];
+                    condition: readonly Readonly<{
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                        name: string;
+                        units?: string | undefined;
+                    }>[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    object_repr?: string | undefined;
+                }>;
+                measurement: readonly Readonly<{
+                    data_type: string;
+                    property: Readonly<{
+                        units: string;
+                        scalar?: string | number | undefined;
+                        matrix: readonly (readonly number[])[];
+                        name: string;
+                        category: string;
+                        domain: string;
+                    }>;
+                    condition?: readonly Readonly<{
+                        units: string;
+                        scalar: number;
+                        name: string;
+                        refers_to?: string | undefined;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
+                }>[];
+            }>) & {
+                config: {
+                    material: ((val: {
+                        chemical_formula: string;
+                        chemical_elements: readonly string[];
+                        condition: readonly {
+                            scalar: readonly {
+                                value: number;
+                            }[];
+                            name: string;
+                            units?: string | undefined;
+                        }[];
+                        phase: string;
+                        phase_id: number;
+                        entry: string;
+                        object_repr?: string | undefined;
+                    }) => Readonly<{
+                        chemical_formula: string;
+                        chemical_elements: readonly string[];
+                        condition: readonly Readonly<{
+                            scalar: readonly Readonly<{
+                                value: number;
+                            }>[];
+                            name: string;
+                            units?: string | undefined;
+                        }>[];
+                        phase: string;
+                        phase_id: number;
+                        entry: string;
+                        object_repr?: string | undefined;
+                    }>) & {
+                        config: {
+                            chemical_formula: (val: string) => string;
+                            chemical_elements: ((val: readonly string[]) => readonly string[]) & {
+                                config: (val: string) => string;
+                                Value: readonly string[];
+                            };
+                            condition: ((val: readonly {
+                                scalar: readonly {
+                                    value: number;
+                                }[];
+                                name: string;
+                                units?: string | undefined;
+                            }[]) => readonly Readonly<{
+                                scalar: readonly Readonly<{
+                                    value: number;
+                                }>[];
+                                name: string;
+                                units?: string | undefined;
+                            }>[]) & {
+                                config: ((val: {
+                                    scalar: readonly {
+                                        value: number;
+                                    }[];
+                                    name: string;
+                                    units?: string | undefined;
+                                }) => Readonly<{
+                                    scalar: readonly Readonly<{
+                                        value: number;
+                                    }>[];
+                                    name: string;
+                                    units?: string | undefined;
+                                }>) & {
+                                    config: {
+                                        scalar: ((val: readonly {
+                                            value: number;
+                                        }[]) => readonly Readonly<{
+                                            value: number;
+                                        }>[]) & {
+                                            config: ((val: {
+                                                value: number;
+                                            }) => Readonly<{
+                                                value: number;
+                                            }>) & {
+                                                config: {
+                                                    value: (val: number) => number;
+                                                };
+                                                Value: Readonly<{
+                                                    value: number;
+                                                }>;
+                                            };
+                                            Value: readonly Readonly<{
+                                                value: number;
+                                            }>[];
+                                        };
+                                        name: (val: string) => string;
+                                        units: ((val: string | undefined) => string | undefined) & {
+                                            config: {
+                                                sub: (val: string) => string;
+                                                fallback: (() => string) | undefined;
+                                            };
+                                            Value: string | undefined;
+                                        };
+                                    };
+                                    Value: Readonly<{
+                                        scalar: readonly Readonly<{
+                                            value: number;
+                                        }>[];
+                                        name: string;
+                                        units?: string | undefined;
+                                    }>;
+                                };
+                                Value: readonly Readonly<{
+                                    scalar: readonly Readonly<{
+                                        value: number;
+                                    }>[];
+                                    name: string;
+                                    units?: string | undefined;
+                                }>[];
+                            };
+                            phase: (val: string) => string;
+                            phase_id: (val: number) => number;
+                            entry: (val: string) => string;
+                            object_repr: ((val: string | undefined) => string | undefined) & {
+                                config: {
+                                    sub: (val: string) => string;
+                                    fallback: (() => string) | undefined;
+                                };
+                                Value: string | undefined;
+                            };
+                        };
+                        Value: Readonly<{
+                            chemical_formula: string;
+                            chemical_elements: readonly string[];
+                            condition: readonly Readonly<{
+                                scalar: readonly Readonly<{
+                                    value: number;
+                                }>[];
+                                name: string;
+                                units?: string | undefined;
+                            }>[];
+                            phase: string;
+                            phase_id: number;
+                            entry: string;
+                            object_repr?: string | undefined;
+                        }>;
+                    };
+                    measurement: ((val: readonly {
+                        data_type: string;
+                        property: {
+                            units: string;
+                            scalar?: string | number | undefined;
+                            matrix: readonly (readonly number[])[];
+                            name: string;
+                            category: string;
+                            domain: string;
+                        };
+                        condition?: readonly {
+                            units: string;
+                            scalar: number;
+                            name: string;
+                            refers_to?: string | undefined;
+                        }[] | undefined;
+                        raw_data?: string | undefined;
+                    }[]) => readonly Readonly<{
+                        data_type: string;
+                        property: Readonly<{
+                            units: string;
+                            scalar?: string | number | undefined;
+                            matrix: readonly (readonly number[])[];
+                            name: string;
+                            category: string;
+                            domain: string;
+                        }>;
+                        condition?: readonly Readonly<{
+                            units: string;
+                            scalar: number;
+                            name: string;
+                            refers_to?: string | undefined;
+                        }>[] | undefined;
+                        raw_data?: string | undefined;
+                    }>[]) & {
+                        config: ((val: {
+                            data_type: string;
+                            property: {
+                                units: string;
+                                scalar?: string | number | undefined;
+                                matrix: readonly (readonly number[])[];
+                                name: string;
+                                category: string;
+                                domain: string;
+                            };
+                            condition?: readonly {
+                                units: string;
+                                scalar: number;
+                                name: string;
+                                refers_to?: string | undefined;
+                            }[] | undefined;
+                            raw_data?: string | undefined;
+                        }) => Readonly<{
+                            data_type: string;
+                            property: Readonly<{
+                                units: string;
+                                scalar?: string | number | undefined;
+                                matrix: readonly (readonly number[])[];
+                                name: string;
+                                category: string;
+                                domain: string;
+                            }>;
+                            condition?: readonly Readonly<{
+                                units: string;
+                                scalar: number;
+                                name: string;
+                                refers_to?: string | undefined;
+                            }>[] | undefined;
+                            raw_data?: string | undefined;
+                        }>) & {
+                            config: {
+                                data_type: (val: string) => string;
+                                property: ((val: {
+                                    units: string;
+                                    scalar?: string | number | undefined;
+                                    matrix: readonly (readonly number[])[];
+                                    name: string;
+                                    category: string;
+                                    domain: string;
+                                }) => Readonly<{
+                                    units: string;
+                                    scalar?: string | number | undefined;
+                                    matrix: readonly (readonly number[])[];
+                                    name: string;
+                                    category: string;
+                                    domain: string;
+                                }>) & {
+                                    config: {
+                                        units: (val: string) => string;
+                                        scalar: ((val: string | number | undefined) => string | number | undefined) & {
+                                            config: {
+                                                sub: ((val: string | number) => string | number) & {
+                                                    config: [(val: string) => string, (val: number) => number];
+                                                    Value: string | number;
+                                                };
+                                                fallback: (() => string | number) | undefined;
+                                            };
+                                            Value: string | number | undefined;
+                                        };
+                                        matrix: ((val: readonly (readonly number[])[]) => readonly (readonly number[])[]) & {
+                                            config: ((val: readonly number[]) => readonly number[]) & {
+                                                config: (val: number) => number;
+                                                Value: readonly number[];
+                                            };
+                                            Value: readonly (readonly number[])[];
+                                        };
+                                        name: (val: string) => string;
+                                        category: (val: string) => string;
+                                        domain: (val: string) => string;
+                                    };
+                                    Value: Readonly<{
+                                        units: string;
+                                        scalar?: string | number | undefined;
+                                        matrix: readonly (readonly number[])[];
+                                        name: string;
+                                        category: string;
+                                        domain: string;
+                                    }>;
+                                };
+                                condition: ((val: readonly {
+                                    units: string;
+                                    scalar: number;
+                                    name: string;
+                                    refers_to?: string | undefined;
+                                }[] | undefined) => readonly Readonly<{
+                                    units: string;
+                                    scalar: number;
+                                    name: string;
+                                    refers_to?: string | undefined;
+                                }>[] | undefined) & {
+                                    config: {
+                                        sub: ((val: readonly {
+                                            units: string;
+                                            scalar: number;
+                                            name: string;
+                                            refers_to?: string | undefined;
+                                        }[]) => readonly Readonly<{
+                                            units: string;
+                                            scalar: number;
+                                            name: string;
+                                            refers_to?: string | undefined;
+                                        }>[]) & {
+                                            config: ((val: {
+                                                units: string;
+                                                scalar: number;
+                                                name: string;
+                                                refers_to?: string | undefined;
+                                            }) => Readonly<{
+                                                units: string;
+                                                scalar: number;
+                                                name: string;
+                                                refers_to?: string | undefined;
+                                            }>) & {
+                                                config: {
+                                                    units: (val: string) => string;
+                                                    scalar: (val: number) => number;
+                                                    name: (val: string) => string;
+                                                    refers_to: ((val: string | undefined) => string | undefined) & {
+                                                        config: {
+                                                            sub: (val: string) => string;
+                                                            fallback: (() => string) | undefined;
+                                                        };
+                                                        Value: string | undefined;
+                                                    };
+                                                };
+                                                Value: Readonly<{
+                                                    units: string;
+                                                    scalar: number;
+                                                    name: string;
+                                                    refers_to?: string | undefined;
+                                                }>;
+                                            };
+                                            Value: readonly Readonly<{
+                                                units: string;
+                                                scalar: number;
+                                                name: string;
+                                                refers_to?: string | undefined;
+                                            }>[];
+                                        };
+                                        fallback: (() => readonly Readonly<{
+                                            units: string;
+                                            scalar: number;
+                                            name: string;
+                                            refers_to?: string | undefined;
+                                        }>[]) | undefined;
+                                    };
+                                    Value: readonly Readonly<{
+                                        units: string;
+                                        scalar: number;
+                                        name: string;
+                                        refers_to?: string | undefined;
+                                    }>[] | undefined;
+                                };
+                                raw_data: ((val: string | undefined) => string | undefined) & {
+                                    config: {
+                                        sub: (val: string) => string;
+                                        fallback: (() => string) | undefined;
+                                    };
+                                    Value: string | undefined;
+                                };
+                            };
+                            Value: Readonly<{
+                                data_type: string;
+                                property: Readonly<{
+                                    units: string;
+                                    scalar?: string | number | undefined;
+                                    matrix: readonly (readonly number[])[];
+                                    name: string;
+                                    category: string;
+                                    domain: string;
+                                }>;
+                                condition?: readonly Readonly<{
+                                    units: string;
+                                    scalar: number;
+                                    name: string;
+                                    refers_to?: string | undefined;
+                                }>[] | undefined;
+                                raw_data?: string | undefined;
+                            }>;
+                        };
+                        Value: readonly Readonly<{
+                            data_type: string;
+                            property: Readonly<{
+                                units: string;
+                                scalar?: string | number | undefined;
+                                matrix: readonly (readonly number[])[];
+                                name: string;
+                                category: string;
+                                domain: string;
+                            }>;
+                            condition?: readonly Readonly<{
+                                units: string;
+                                scalar: number;
+                                name: string;
+                                refers_to?: string | undefined;
+                            }>[] | undefined;
+                            raw_data?: string | undefined;
+                        }>[];
+                    };
+                };
+                Value: Readonly<{
+                    material: Readonly<{
+                        chemical_formula: string;
+                        chemical_elements: readonly string[];
+                        condition: readonly Readonly<{
+                            scalar: readonly Readonly<{
+                                value: number;
+                            }>[];
+                            name: string;
+                            units?: string | undefined;
+                        }>[];
+                        phase: string;
+                        phase_id: number;
+                        entry: string;
+                        object_repr?: string | undefined;
+                    }>;
+                    measurement: readonly Readonly<{
+                        data_type: string;
+                        property: Readonly<{
+                            units: string;
+                            scalar?: string | number | undefined;
+                            matrix: readonly (readonly number[])[];
+                            name: string;
+                            category: string;
+                            domain: string;
+                        }>;
+                        condition?: readonly Readonly<{
+                            units: string;
+                            scalar: number;
+                            name: string;
+                            refers_to?: string | undefined;
+                        }>[] | undefined;
+                        raw_data?: string | undefined;
+                    }>[];
+                }>;
+            };
+            version: (val: string) => string;
+            object_type: (val: string) => string;
+            reference: ((val: {
+                entry: string;
+                phase?: string | undefined;
+            }) => Readonly<{
+                entry: string;
+                phase?: string | undefined;
+            }>) & {
+                config: {
+                    entry: (val: string) => string;
+                    phase: ((val: string | undefined) => string | undefined) & {
+                        config: {
+                            sub: (val: string) => string;
+                            fallback: (() => string) | undefined;
+                        };
+                        Value: string | undefined;
+                    };
+                };
+                Value: Readonly<{
+                    entry: string;
+                    phase?: string | undefined;
+                }>;
+            };
+        };
+        Value: Readonly<{
+            sample: Readonly<{
+                material: Readonly<{
+                    chemical_formula: string;
+                    chemical_elements: readonly string[];
+                    condition: readonly Readonly<{
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                        name: string;
+                        units?: string | undefined;
+                    }>[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    object_repr?: string | undefined;
+                }>;
+                measurement: readonly Readonly<{
+                    data_type: string;
+                    property: Readonly<{
+                        units: string;
+                        scalar?: string | number | undefined;
+                        matrix: readonly (readonly number[])[];
+                        name: string;
+                        category: string;
+                        domain: string;
+                    }>;
+                    condition?: readonly Readonly<{
+                        units: string;
+                        scalar: number;
+                        name: string;
+                        refers_to?: string | undefined;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
+                }>[];
+            }>;
+            version: string;
+            object_type: string;
+            reference: Readonly<{
+                entry: string;
+                phase?: string | undefined;
+            }>;
+        }>;
+    };
+    class $visavis_scatter extends $.$visavis_scatter {
+        json(): Readonly<{
+            sample: Readonly<{
+                material: Readonly<{
+                    chemical_formula: string;
+                    chemical_elements: readonly string[];
+                    condition: readonly Readonly<{
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                        name: string;
+                        units?: string | undefined;
+                    }>[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    object_repr?: string | undefined;
+                }>;
+                measurement: readonly Readonly<{
+                    data_type: string;
+                    property: Readonly<{
+                        units: string;
+                        scalar?: string | number | undefined;
+                        matrix: readonly (readonly number[])[];
+                        name: string;
+                        category: string;
+                        domain: string;
+                    }>;
+                    condition?: readonly Readonly<{
+                        units: string;
+                        scalar: number;
+                        name: string;
+                        refers_to?: string | undefined;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
+                }>[];
+            }>;
+            version: string;
+            object_type: string;
+            reference: Readonly<{
+                entry: string;
+                phase?: string | undefined;
+            }>;
+        }>;
+        subscribe_events(): void;
+        p_data(): number[];
+        t_data(): number[];
+        p_data_sum(): number;
+        t_data_sum(): number;
+        x_data_type(): "pressure" | "temperature";
+        x_data(): number[];
+        x_title(): "P, Gpa" | "T, K";
+        data(): {
+            type: string;
+            mode: string;
+            name: string;
+            x: number[];
+            y: number[];
+            marker: {
+                color: string;
+                symbol: string;
+                size: number;
+            };
+        }[];
+        layout(): {
+            showlegend: boolean;
+            legend: {
+                x: number;
+                y: number;
+                font: {
+                    family: string;
+                    size: number;
+                };
+            };
+            xaxis: {
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                showticklabels: boolean;
+                zeroline: boolean;
+                ticklen: number;
+                title: "P, Gpa" | "T, K";
+            };
+            yaxis: {
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                showticklabels: boolean;
+                zeroline: boolean;
+                ticklen: number;
+                title: string;
+            };
+            font: {
+                family: string;
+                size: number;
+            };
+        };
+    }
+}
+
+declare namespace $ {
+    class $visavis_customscatter extends $visavis_plot_plotly {
+    }
+}
+
+declare namespace $.$$ {
+    const $visavis_customscatter_json: ((val: {
+        plots: readonly {
+            name: string;
+            type: string;
+            mode: string;
+            interpolation: string;
+            x: readonly number[];
+            y: readonly number[];
+        }[];
+        xtitle?: string | undefined;
+        ytitle?: string | undefined;
+        xlog: boolean | null;
+        ylog: boolean | null;
+    }) => Readonly<{
+        plots: readonly Readonly<{
+            name: string;
+            type: string;
+            mode: string;
+            interpolation: string;
+            x: readonly number[];
+            y: readonly number[];
+        }>[];
+        xtitle?: string | undefined;
+        ytitle?: string | undefined;
+        xlog: boolean | null;
+        ylog: boolean | null;
+    }>) & {
+        config: {
+            plots: ((val: readonly {
+                name: string;
+                type: string;
+                mode: string;
+                interpolation: string;
+                x: readonly number[];
+                y: readonly number[];
+            }[]) => readonly Readonly<{
+                name: string;
+                type: string;
+                mode: string;
+                interpolation: string;
+                x: readonly number[];
+                y: readonly number[];
+            }>[]) & {
+                config: ((val: {
+                    name: string;
+                    type: string;
+                    mode: string;
+                    interpolation: string;
+                    x: readonly number[];
+                    y: readonly number[];
+                }) => Readonly<{
+                    name: string;
+                    type: string;
+                    mode: string;
+                    interpolation: string;
+                    x: readonly number[];
+                    y: readonly number[];
+                }>) & {
+                    config: {
+                        name: (val: string) => string;
+                        type: (val: string) => string;
+                        mode: (val: string) => string;
+                        interpolation: (val: string) => string;
+                        x: ((val: readonly number[]) => readonly number[]) & {
+                            config: (val: number) => number;
+                            Value: readonly number[];
+                        };
+                        y: ((val: readonly number[]) => readonly number[]) & {
+                            config: (val: number) => number;
+                            Value: readonly number[];
+                        };
+                    };
+                    Value: Readonly<{
+                        name: string;
+                        type: string;
+                        mode: string;
+                        interpolation: string;
+                        x: readonly number[];
+                        y: readonly number[];
+                    }>;
+                };
+                Value: readonly Readonly<{
+                    name: string;
+                    type: string;
+                    mode: string;
+                    interpolation: string;
+                    x: readonly number[];
+                    y: readonly number[];
+                }>[];
+            };
+            xtitle: ((val: string | undefined) => string | undefined) & {
+                config: {
+                    sub: (val: string) => string;
+                    fallback: (() => string) | undefined;
+                };
+                Value: string | undefined;
+            };
+            ytitle: ((val: string | undefined) => string | undefined) & {
+                config: {
+                    sub: (val: string) => string;
+                    fallback: (() => string) | undefined;
+                };
+                Value: string | undefined;
+            };
+            xlog: ((val: boolean | null) => boolean | null) & {
+                config: (val: boolean) => boolean;
+                Value: boolean | null;
+            };
+            ylog: ((val: boolean | null) => boolean | null) & {
+                config: (val: boolean) => boolean;
+                Value: boolean | null;
+            };
+        };
+        Value: Readonly<{
+            plots: readonly Readonly<{
+                name: string;
+                type: string;
+                mode: string;
+                interpolation: string;
+                x: readonly number[];
+                y: readonly number[];
+            }>[];
+            xtitle?: string | undefined;
+            ytitle?: string | undefined;
+            xlog: boolean | null;
+            ylog: boolean | null;
+        }>;
+    };
+    class $visavis_customscatter extends $.$visavis_customscatter {
+        json(): Readonly<{
+            plots: readonly Readonly<{
+                name: string;
+                type: string;
+                mode: string;
+                interpolation: string;
+                x: readonly number[];
+                y: readonly number[];
+            }>[];
+            xtitle?: string | undefined;
+            ytitle?: string | undefined;
+            xlog: boolean | null;
+            ylog: boolean | null;
+        }>;
+        subscribe_events(): void;
+        layout(): {
+            showlegend: boolean;
+            legend: {
+                x: number;
+                y: number;
+                font: {
+                    family: string;
+                    size: number;
+                };
+            };
+            xaxis: {
+                type: string;
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                showticklabels: boolean;
+                zeroline: boolean;
+                zerolinecolor: string;
+                zerolinewidth: number;
+                ticklen: number;
+                title: string | undefined;
+            };
+            yaxis: {
+                type: string;
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                showticklabels: boolean;
+                zeroline: boolean;
+                zerolinecolor: string;
+                zerolinewidth: number;
+                ticklen: number;
+                title: string | undefined;
+            };
+            font: {
+                family: string;
+                size: number;
+            };
+            margin: {
+                t: number;
+                r: number;
+            };
+        };
+        data(): readonly Readonly<{
+            name: string;
+            type: string;
+            mode: string;
+            interpolation: string;
+            x: readonly number[];
+            y: readonly number[];
+        }>[];
+    }
+}
+
+declare namespace $ {
+    class $visavis_heatmap extends $visavis_plot_plotly {
+    }
+}
+
+declare namespace $.$$ {
+    class $visavis_heatmap extends $.$visavis_heatmap {
+        json(): any;
+        layout(): {
+            showlegend: boolean;
+            hovermode: string;
+            xaxis: {
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                zeroline: boolean;
+                showticklabels: boolean;
+            };
+            xaxis2: {
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                zeroline: boolean;
+                showticklabels: boolean;
+                side: string;
+                overlaying: string;
+            };
+            yaxis: {
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                zeroline: boolean;
+                showticklabels: boolean;
+            };
+            yaxis2: {
+                autorange: boolean;
+                showgrid: boolean;
+                showline: boolean;
+                zeroline: boolean;
+                showticklabels: boolean;
+                side: string;
+                overlaying: string;
+            };
+        };
+        data(): ({
+            type: string;
+            mode: string;
+            hoverinfo: string;
+            x: any;
+            y: any;
+            text: any;
+            marker: {
+                color: any;
+                colorscale: string;
+                size: number;
+                opacity: number;
+            };
+            xaxis?: undefined;
+            yaxis?: undefined;
+        } | {
+            x: never[];
+            y: never[];
+            type: string;
+            xaxis: string;
+            yaxis: string;
+            mode?: undefined;
+            hoverinfo?: undefined;
+            text?: undefined;
+            marker?: undefined;
+        })[];
+    }
+}
+
+declare namespace $ {
+    class $visavis_graph extends $mol_book2 {
+        plot(): $visavis_plot;
+        pages(): readonly any[];
+        plot_title(): string;
+        draw(): any;
+        Root(): $mol_view;
+        plot_body(): readonly any[];
+        Plot(): $mol_page;
+    }
+}
+
+declare namespace $.$$ {
+    type Node = {
+        name: string;
+        index?: number;
+        px?: number;
+        py?: number;
+        weight?: number;
+        x?: number;
+        y?: number;
+    };
+    type Edge = {
+        source: Node;
+        type: string;
+        target: Node;
+    };
+    export const $visavis_graph_json: ((val: {
+        error: string | null;
+        warning: string | null;
+        graph_rel: string;
+        payload: readonly {
+            source: string;
+            type: string;
+            target: string | number;
+        }[];
+    }) => Readonly<{
+        error: string | null;
+        warning: string | null;
+        graph_rel: string;
+        payload: readonly Readonly<{
+            source: string;
+            type: string;
+            target: string | number;
+        }>[];
+    }>) & {
+        config: {
+            error: ((val: string | null) => string | null) & {
+                config: (val: string) => string;
+                Value: string | null;
+            };
+            warning: ((val: string | null) => string | null) & {
+                config: (val: string) => string;
+                Value: string | null;
+            };
+            graph_rel: (val: string) => string;
+            payload: ((val: readonly {
+                source: string;
+                type: string;
+                target: string | number;
+            }[]) => readonly Readonly<{
+                source: string;
+                type: string;
+                target: string | number;
+            }>[]) & {
+                config: ((val: {
+                    source: string;
+                    type: string;
+                    target: string | number;
+                }) => Readonly<{
+                    source: string;
+                    type: string;
+                    target: string | number;
+                }>) & {
+                    config: {
+                        source: (val: string) => string;
+                        type: (val: string) => string;
+                        target: ((val: string | number) => string | number) & {
+                            config: [(val: string) => string, (val: number) => number];
+                            Value: string | number;
+                        };
+                    };
+                    Value: Readonly<{
+                        source: string;
+                        type: string;
+                        target: string | number;
+                    }>;
+                };
+                Value: readonly Readonly<{
+                    source: string;
+                    type: string;
+                    target: string | number;
+                }>[];
+            };
+        };
+        Value: Readonly<{
+            error: string | null;
+            warning: string | null;
+            graph_rel: string;
+            payload: readonly Readonly<{
+                source: string;
+                type: string;
+                target: string | number;
+            }>[];
+        }>;
+    };
+    export class $visavis_graph extends $.$visavis_graph {
+        json(): Readonly<{
+            error: string | null;
+            warning: string | null;
+            graph_rel: string;
+            payload: readonly Readonly<{
+                source: string;
+                type: string;
+                target: string | number;
+            }>[];
+        }>;
+        plot_title(): string;
+        data(): {
+            nodes: Record<string, Node>;
+            edges: Edge[];
+            labels: Record<string, string>;
+            radii: Record<string, number>;
+            foci: Record<string, string>;
+            table: Record<string, number>;
+            circle_cls: string;
+            text_cls: string;
+        };
+        draw(): void;
+    }
+    export {};
+}
+
+declare namespace $ {
+}
+
+declare namespace $.$$ {
+}
+
+declare namespace $ {
+    class $visavis_app extends $mol_book2 {
+        attr(): Record<string, any>;
         pages(): readonly any[];
         files_read(next?: any): any;
         Upload(): $mol_button_open;
@@ -3125,13 +5727,21 @@ declare namespace $ {
         Matrix(id: any): $$.$visavis_matrix;
         Cube(id: any): $$.$visavis_cube;
         Phase(id: any): $$.$visavis_phase;
+        Bar(id: any): $$.$visavis_bar;
+        Discovery(id: any): $$.$visavis_discovery;
+        Eigen(id: any): $$.$visavis_eigen;
+        Pie(id: any): $$.$visavis_pie;
+        Scatter(id: any): $$.$visavis_scatter;
+        Customscatter(id: any): $$.$visavis_customscatter;
+        Heatmap(id: any): $$.$visavis_heatmap;
+        Graph(id: any): $$.$visavis_graph;
     }
 }
 
 declare namespace $ {
     type $mol_blob = Blob;
     let $mol_blob: {
-        new (blobParts?: BlobPart[] | undefined, options?: BlobPropertyBag | undefined): Blob;
+        new (blobParts?: readonly BlobPart[], options?: BlobPropertyBag): Blob;
         prototype: Blob;
     };
 }
@@ -3157,6 +5767,7 @@ declare namespace $.$$ {
         Plot_opened(): readonly any[];
         plot(plot: $visavis_plot): $visavis_plot;
         pages(): any[];
+        Placeholder(): any;
     }
 }
 

@@ -11393,4 +11393,5 @@ var $;
 })($ || ($ = {}));
 //visavis/app/app.view.css.ts
 
+export default $
 //# sourceMappingURL=web.js.map

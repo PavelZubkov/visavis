@@ -428,8 +428,10 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    type $mol_type_keys_extract<Input, Upper> = {
-        [Field in keyof Input]: unknown extends Input[Field] ? never : Input[Field] extends never ? never : Input[Field] extends Upper ? Field : never;
+    type $mol_type_keys_extract<Input, Upper, Lower = never> = {
+        [Field in keyof Input]: unknown extends Input[Field] ? never : Input[Field] extends never ? never : Input[Field] extends Upper ? [
+            Lower
+        ] extends [Input[Field]] ? Field : never : never;
     }[keyof Input];
 }
 
@@ -1720,9 +1722,9 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    type $mol_type_partial_undefined<Val> = $mol_type_merge<Partial<Val> & Pick<Val, {
+    type $mol_type_partial_undefined<Val> = $mol_type_merge<$mol_type_override<Partial<Val>, Pick<Val, {
         [Field in keyof Val]: undefined extends Val[Field] ? never : Field;
-    }[keyof Val]>>;
+    }[keyof Val]>>>;
 }
 
 declare namespace $ {
@@ -1733,9 +1735,9 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    function $mol_data_record<Sub extends Record<string, $mol_data_value>>(sub: Sub): ((val: $mol_type_merge<Partial<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }> & Pick<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }, { [Field in keyof { [key in keyof Sub]: Parameters<Sub[key]>[0]; }]: undefined extends { [key in keyof Sub]: Parameters<Sub[key]>[0]; }[Field] ? never : Field; }[keyof Sub]>>) => Readonly<$mol_type_merge<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }> & Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, { [Field_1 in keyof { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; }[keyof Sub]>>>) & {
+    function $mol_data_record<Sub extends Record<string, $mol_data_value>>(sub: Sub): ((val: $mol_type_merge<$mol_type_override<Partial<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }>, Pick<{ [key in keyof Sub]: Parameters<Sub[key]>[0]; }, { [Field in keyof { [key in keyof Sub]: Parameters<Sub[key]>[0]; }]: undefined extends { [key in keyof Sub]: Parameters<Sub[key]>[0]; }[Field] ? never : Field; }[keyof Sub]>>>) => Readonly<$mol_type_merge<$mol_type_override<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }>, Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, { [Field_1 in keyof { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; }[keyof Sub]>>>>) & {
         config: Sub;
-        Value: Readonly<$mol_type_merge<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }> & Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, { [Field_1 in keyof { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; }[keyof Sub]>>>;
+        Value: Readonly<$mol_type_merge<$mol_type_override<Partial<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }>, Pick<{ [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }, { [Field_1 in keyof { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }]: undefined extends { [key_1 in keyof Sub]: ReturnType<Sub[key_1]>; }[Field_1] ? never : Field_1; }[keyof Sub]>>>>;
     };
 }
 
@@ -1832,6 +1834,7 @@ declare namespace $.$$ {
         json(): Readonly<{
             payload: Readonly<{
                 nodes: readonly Readonly<{
+                    count?: number | undefined;
                     name: string;
                     num: number;
                     nump: number;
@@ -1843,18 +1846,18 @@ declare namespace $.$$ {
                     rmet: number;
                     tmelt: number;
                     eneg: number;
-                    count?: number | undefined;
                 }>[];
                 links: readonly Readonly<{
-                    source: number;
+                    cmp?: number | undefined;
                     target: number;
+                    source: number;
                     value: number;
                     cmt: string;
-                    cmp?: number | undefined;
                 }>[];
             }>;
         }>;
         nodes(): readonly Readonly<{
+            count?: number | undefined;
             name: string;
             num: number;
             nump: number;
@@ -1866,14 +1869,13 @@ declare namespace $.$$ {
             rmet: number;
             tmelt: number;
             eneg: number;
-            count?: number | undefined;
         }>[];
         links(): Readonly<{
-            source: number;
+            cmp?: number | undefined;
             target: number;
+            source: number;
             value: number;
             cmt: string;
-            cmp?: number | undefined;
         }>[];
         links_value_min(): number;
         links_value_max(): number;
@@ -2474,6 +2476,9 @@ declare namespace $.$$ {
         json(): Readonly<{
             payload: Readonly<{
                 tcube?: boolean | undefined;
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+                ztitle?: string | undefined;
                 points: Readonly<{
                     x: readonly number[];
                     y: readonly number[];
@@ -2482,9 +2487,6 @@ declare namespace $.$$ {
                     labels: readonly string[];
                 }>;
                 fixel: boolean | null;
-                xtitle?: string | undefined;
-                ytitle?: string | undefined;
-                ztitle?: string | undefined;
             }>;
         }>;
         value_list(): number[];
@@ -2746,26 +2748,6 @@ declare namespace $.$$ {
     export class $visavis_phase extends $.$visavis_phase {
         plot_title(): string;
         json(): Readonly<{
-            naxes: number;
-            arity: number;
-            diatype: string;
-            chemical_elements: readonly string[];
-            temp: readonly number[];
-            labels: readonly [string, number[], number | null][];
-            shapes: readonly Readonly<{
-                kind: string;
-                svgpath: string;
-                label?: string | undefined;
-                phase?: string | undefined;
-                nphases?: number | undefined;
-                is_solid?: boolean | undefined;
-                phase_id?: number | undefined;
-                reflabel?: number | undefined;
-                chemical_elements?: readonly string[] | undefined;
-            }>[];
-            entry: string;
-            object_type: string;
-            use_visavis_type: string;
             title_a?: string | undefined;
             title_b?: string | undefined;
             object_repr?: string | undefined;
@@ -2789,6 +2771,26 @@ declare namespace $.$$ {
             range_a?: readonly number[] | undefined;
             range_b?: readonly number[] | undefined;
             range_c?: readonly number[] | undefined;
+            labels: readonly [string, number[], number | null][];
+            naxes: number;
+            arity: number;
+            diatype: string;
+            chemical_elements: readonly string[];
+            temp: readonly number[];
+            shapes: readonly Readonly<{
+                label?: string | undefined;
+                chemical_elements?: readonly string[] | undefined;
+                phase?: string | undefined;
+                nphases?: number | undefined;
+                is_solid?: boolean | undefined;
+                phase_id?: number | undefined;
+                reflabel?: number | undefined;
+                kind: string;
+                svgpath: string;
+            }>[];
+            entry: string;
+            object_type: string;
+            use_visavis_type: string;
         }>;
         json_title_b(): string;
         json_title_a(): string;
@@ -2866,49 +2868,49 @@ declare namespace $ {
 
 declare namespace $.$$ {
     const $visavis_bar_json: ((val: {
-        payload: {
-            x: readonly number[];
-            dx: number;
-            y: readonly number[];
-            xtitle?: string | undefined;
-            ytitle?: string | undefined;
-        };
         payload2?: {
-            x: readonly number[];
-            dx: number;
-            y: readonly number[];
             xtitle?: string | undefined;
             ytitle?: string | undefined;
+            x: readonly number[];
+            y: readonly number[];
+            dx: number;
         } | undefined;
+        payload: {
+            xtitle?: string | undefined;
+            ytitle?: string | undefined;
+            x: readonly number[];
+            y: readonly number[];
+            dx: number;
+        };
     }) => Readonly<{
-        payload: Readonly<{
-            x: readonly number[];
-            dx: number;
-            y: readonly number[];
-            xtitle?: string | undefined;
-            ytitle?: string | undefined;
-        }>;
         payload2?: Readonly<{
-            x: readonly number[];
-            dx: number;
-            y: readonly number[];
             xtitle?: string | undefined;
             ytitle?: string | undefined;
+            x: readonly number[];
+            y: readonly number[];
+            dx: number;
         }> | undefined;
+        payload: Readonly<{
+            xtitle?: string | undefined;
+            ytitle?: string | undefined;
+            x: readonly number[];
+            y: readonly number[];
+            dx: number;
+        }>;
     }>) & {
         config: {
             payload: ((val: {
-                x: readonly number[];
-                dx: number;
-                y: readonly number[];
                 xtitle?: string | undefined;
                 ytitle?: string | undefined;
+                x: readonly number[];
+                y: readonly number[];
+                dx: number;
             }) => Readonly<{
-                x: readonly number[];
-                dx: number;
-                y: readonly number[];
                 xtitle?: string | undefined;
                 ytitle?: string | undefined;
+                x: readonly number[];
+                y: readonly number[];
+                dx: number;
             }>) & {
                 config: {
                     x: ((val: readonly number[]) => readonly number[]) & {
@@ -2936,39 +2938,39 @@ declare namespace $.$$ {
                     };
                 };
                 Value: Readonly<{
-                    x: readonly number[];
-                    dx: number;
-                    y: readonly number[];
                     xtitle?: string | undefined;
                     ytitle?: string | undefined;
+                    x: readonly number[];
+                    y: readonly number[];
+                    dx: number;
                 }>;
             };
             payload2: ((val: {
-                x: readonly number[];
-                dx: number;
-                y: readonly number[];
                 xtitle?: string | undefined;
                 ytitle?: string | undefined;
+                x: readonly number[];
+                y: readonly number[];
+                dx: number;
             } | undefined) => Readonly<{
-                x: readonly number[];
-                dx: number;
-                y: readonly number[];
                 xtitle?: string | undefined;
                 ytitle?: string | undefined;
+                x: readonly number[];
+                y: readonly number[];
+                dx: number;
             }> | undefined) & {
                 config: {
                     sub: ((val: {
-                        x: readonly number[];
-                        dx: number;
-                        y: readonly number[];
                         xtitle?: string | undefined;
                         ytitle?: string | undefined;
+                        x: readonly number[];
+                        y: readonly number[];
+                        dx: number;
                     }) => Readonly<{
-                        x: readonly number[];
-                        dx: number;
-                        y: readonly number[];
                         xtitle?: string | undefined;
                         ytitle?: string | undefined;
+                        x: readonly number[];
+                        y: readonly number[];
+                        dx: number;
                     }>) & {
                         config: {
                             x: ((val: readonly number[]) => readonly number[]) & {
@@ -2996,63 +2998,63 @@ declare namespace $.$$ {
                             };
                         };
                         Value: Readonly<{
-                            x: readonly number[];
-                            dx: number;
-                            y: readonly number[];
                             xtitle?: string | undefined;
                             ytitle?: string | undefined;
+                            x: readonly number[];
+                            y: readonly number[];
+                            dx: number;
                         }>;
                     };
                     fallback: (() => Readonly<{
-                        x: readonly number[];
-                        dx: number;
-                        y: readonly number[];
                         xtitle?: string | undefined;
                         ytitle?: string | undefined;
+                        x: readonly number[];
+                        y: readonly number[];
+                        dx: number;
                     }>) | undefined;
                 };
                 Value: Readonly<{
-                    x: readonly number[];
-                    dx: number;
-                    y: readonly number[];
                     xtitle?: string | undefined;
                     ytitle?: string | undefined;
+                    x: readonly number[];
+                    y: readonly number[];
+                    dx: number;
                 }> | undefined;
             };
         };
         Value: Readonly<{
-            payload: Readonly<{
-                x: readonly number[];
-                dx: number;
-                y: readonly number[];
-                xtitle?: string | undefined;
-                ytitle?: string | undefined;
-            }>;
             payload2?: Readonly<{
-                x: readonly number[];
-                dx: number;
-                y: readonly number[];
                 xtitle?: string | undefined;
                 ytitle?: string | undefined;
+                x: readonly number[];
+                y: readonly number[];
+                dx: number;
             }> | undefined;
+            payload: Readonly<{
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+                x: readonly number[];
+                y: readonly number[];
+                dx: number;
+            }>;
         }>;
     };
     class $visavis_bar extends $.$visavis_bar {
         json(): Readonly<{
-            payload: Readonly<{
-                x: readonly number[];
-                dx: number;
-                y: readonly number[];
-                xtitle?: string | undefined;
-                ytitle?: string | undefined;
-            }>;
             payload2?: Readonly<{
-                x: readonly number[];
-                dx: number;
-                y: readonly number[];
                 xtitle?: string | undefined;
                 ytitle?: string | undefined;
+                x: readonly number[];
+                y: readonly number[];
+                dx: number;
             }> | undefined;
+            payload: Readonly<{
+                xtitle?: string | undefined;
+                ytitle?: string | undefined;
+                x: readonly number[];
+                y: readonly number[];
+                dx: number;
+            }>;
         }>;
         subscribe_events(): void;
         layout(): {
@@ -3317,253 +3319,213 @@ declare namespace $.$$ {
     };
     type Dos_matrix = ReturnType<typeof Dos_matrix>;
     export const $visavis_eigen_json: ((val: {
+        object_type: string;
         sample: {
             material: {
-                chemical_formula: string;
+                object_repr?: string | undefined;
                 chemical_elements: readonly string[];
-                condition: readonly {
-                    scalar: readonly {
-                        value: number;
-                    }[];
-                    name: string;
-                    units?: string | undefined;
-                }[];
                 phase: string;
                 phase_id: number;
                 entry: string;
-                object_repr?: string | undefined;
+                chemical_formula: string;
+                condition: readonly {
+                    units?: string | undefined;
+                    name: string;
+                    scalar: readonly {
+                        value: number;
+                    }[];
+                }[];
             };
             measurement: readonly {
+                condition?: readonly {
+                    refers_to?: string | undefined;
+                    name: string;
+                    scalar: number;
+                    units: string;
+                }[] | undefined;
+                raw_data?: string | undefined;
                 data_type: string;
                 property: {
-                    units: string;
                     scalar?: string | number | undefined;
+                    name: string;
                     matrix: {
                         bands: readonly (readonly number[])[];
                         kpoints: readonly (readonly number[])[];
                     } | {
                         dos: readonly number[];
                         levels: readonly number[];
-                    } | {
-                        bands: readonly (readonly number[])[];
-                        kpoints: readonly (readonly number[])[];
-                        dos: readonly number[];
-                        levels: readonly number[];
-                    } | {
-                        dos: readonly number[];
-                        levels: readonly number[];
-                        bands: readonly (readonly number[])[];
-                        kpoints: readonly (readonly number[])[];
                     };
-                    name: string;
+                    units: string;
                     category: string;
                     domain: string;
                 };
-                condition?: readonly {
-                    units: string;
-                    scalar: number;
-                    name: string;
-                    refers_to?: string | undefined;
-                }[] | undefined;
-                raw_data?: string | undefined;
             }[];
         };
         version: string;
-        object_type: string;
         reference: {
-            entry: string;
             phase?: string | undefined;
+            entry: string;
         };
     }) => Readonly<{
+        object_type: string;
         sample: Readonly<{
             material: Readonly<{
-                chemical_formula: string;
+                object_repr?: string | undefined;
                 chemical_elements: readonly string[];
-                condition: readonly Readonly<{
-                    scalar: readonly Readonly<{
-                        value: number;
-                    }>[];
-                    name: string;
-                    units?: string | undefined;
-                }>[];
                 phase: string;
                 phase_id: number;
                 entry: string;
-                object_repr?: string | undefined;
+                chemical_formula: string;
+                condition: readonly Readonly<{
+                    units?: string | undefined;
+                    name: string;
+                    scalar: readonly Readonly<{
+                        value: number;
+                    }>[];
+                }>[];
             }>;
             measurement: readonly Readonly<{
+                condition?: readonly Readonly<{
+                    refers_to?: string | undefined;
+                    name: string;
+                    scalar: number;
+                    units: string;
+                }>[] | undefined;
+                raw_data?: string | undefined;
                 data_type: string;
                 property: Readonly<{
-                    units: string;
                     scalar?: string | number | undefined;
+                    name: string;
                     matrix: Readonly<{
                         bands: readonly (readonly number[])[];
                         kpoints: readonly (readonly number[])[];
                     }> | Readonly<{
                         dos: readonly number[];
                         levels: readonly number[];
-                    }> | {
-                        readonly bands: readonly (readonly number[])[];
-                        readonly kpoints: readonly (readonly number[])[];
-                        readonly dos: readonly number[];
-                        readonly levels: readonly number[];
-                    } | {
-                        readonly dos: readonly number[];
-                        readonly levels: readonly number[];
-                        readonly bands: readonly (readonly number[])[];
-                        readonly kpoints: readonly (readonly number[])[];
-                    };
-                    name: string;
+                    }>;
+                    units: string;
                     category: string;
                     domain: string;
                 }>;
-                condition?: readonly Readonly<{
-                    units: string;
-                    scalar: number;
-                    name: string;
-                    refers_to?: string | undefined;
-                }>[] | undefined;
-                raw_data?: string | undefined;
             }>[];
         }>;
         version: string;
-        object_type: string;
         reference: Readonly<{
-            entry: string;
             phase?: string | undefined;
+            entry: string;
         }>;
     }>) & {
         config: {
             sample: ((val: {
                 material: {
-                    chemical_formula: string;
+                    object_repr?: string | undefined;
                     chemical_elements: readonly string[];
-                    condition: readonly {
-                        scalar: readonly {
-                            value: number;
-                        }[];
-                        name: string;
-                        units?: string | undefined;
-                    }[];
                     phase: string;
                     phase_id: number;
                     entry: string;
-                    object_repr?: string | undefined;
+                    chemical_formula: string;
+                    condition: readonly {
+                        units?: string | undefined;
+                        name: string;
+                        scalar: readonly {
+                            value: number;
+                        }[];
+                    }[];
                 };
                 measurement: readonly {
+                    condition?: readonly {
+                        refers_to?: string | undefined;
+                        name: string;
+                        scalar: number;
+                        units: string;
+                    }[] | undefined;
+                    raw_data?: string | undefined;
                     data_type: string;
                     property: {
-                        units: string;
                         scalar?: string | number | undefined;
+                        name: string;
                         matrix: {
                             bands: readonly (readonly number[])[];
                             kpoints: readonly (readonly number[])[];
                         } | {
                             dos: readonly number[];
                             levels: readonly number[];
-                        } | {
-                            bands: readonly (readonly number[])[];
-                            kpoints: readonly (readonly number[])[];
-                            dos: readonly number[];
-                            levels: readonly number[];
-                        } | {
-                            dos: readonly number[];
-                            levels: readonly number[];
-                            bands: readonly (readonly number[])[];
-                            kpoints: readonly (readonly number[])[];
                         };
-                        name: string;
+                        units: string;
                         category: string;
                         domain: string;
                     };
-                    condition?: readonly {
-                        units: string;
-                        scalar: number;
-                        name: string;
-                        refers_to?: string | undefined;
-                    }[] | undefined;
-                    raw_data?: string | undefined;
                 }[];
             }) => Readonly<{
                 material: Readonly<{
-                    chemical_formula: string;
+                    object_repr?: string | undefined;
                     chemical_elements: readonly string[];
-                    condition: readonly Readonly<{
-                        scalar: readonly Readonly<{
-                            value: number;
-                        }>[];
-                        name: string;
-                        units?: string | undefined;
-                    }>[];
                     phase: string;
                     phase_id: number;
                     entry: string;
-                    object_repr?: string | undefined;
+                    chemical_formula: string;
+                    condition: readonly Readonly<{
+                        units?: string | undefined;
+                        name: string;
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                    }>[];
                 }>;
                 measurement: readonly Readonly<{
+                    condition?: readonly Readonly<{
+                        refers_to?: string | undefined;
+                        name: string;
+                        scalar: number;
+                        units: string;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
                     data_type: string;
                     property: Readonly<{
-                        units: string;
                         scalar?: string | number | undefined;
+                        name: string;
                         matrix: Readonly<{
                             bands: readonly (readonly number[])[];
                             kpoints: readonly (readonly number[])[];
                         }> | Readonly<{
                             dos: readonly number[];
                             levels: readonly number[];
-                        }> | {
-                            readonly bands: readonly (readonly number[])[];
-                            readonly kpoints: readonly (readonly number[])[];
-                            readonly dos: readonly number[];
-                            readonly levels: readonly number[];
-                        } | {
-                            readonly dos: readonly number[];
-                            readonly levels: readonly number[];
-                            readonly bands: readonly (readonly number[])[];
-                            readonly kpoints: readonly (readonly number[])[];
-                        };
-                        name: string;
+                        }>;
+                        units: string;
                         category: string;
                         domain: string;
                     }>;
-                    condition?: readonly Readonly<{
-                        units: string;
-                        scalar: number;
-                        name: string;
-                        refers_to?: string | undefined;
-                    }>[] | undefined;
-                    raw_data?: string | undefined;
                 }>[];
             }>) & {
                 config: {
                     material: ((val: {
-                        chemical_formula: string;
+                        object_repr?: string | undefined;
                         chemical_elements: readonly string[];
+                        phase: string;
+                        phase_id: number;
+                        entry: string;
+                        chemical_formula: string;
                         condition: readonly {
+                            units?: string | undefined;
+                            name: string;
                             scalar: readonly {
                                 value: number;
                             }[];
-                            name: string;
-                            units?: string | undefined;
                         }[];
+                    }) => Readonly<{
+                        object_repr?: string | undefined;
+                        chemical_elements: readonly string[];
                         phase: string;
                         phase_id: number;
                         entry: string;
-                        object_repr?: string | undefined;
-                    }) => Readonly<{
                         chemical_formula: string;
-                        chemical_elements: readonly string[];
                         condition: readonly Readonly<{
+                            units?: string | undefined;
+                            name: string;
                             scalar: readonly Readonly<{
                                 value: number;
                             }>[];
-                            name: string;
-                            units?: string | undefined;
                         }>[];
-                        phase: string;
-                        phase_id: number;
-                        entry: string;
-                        object_repr?: string | undefined;
                     }>) & {
                         config: {
                             chemical_formula: (val: string) => string;
@@ -3572,30 +3534,30 @@ declare namespace $.$$ {
                                 Value: readonly string[];
                             };
                             condition: ((val: readonly {
+                                units?: string | undefined;
+                                name: string;
                                 scalar: readonly {
                                     value: number;
                                 }[];
-                                name: string;
-                                units?: string | undefined;
                             }[]) => readonly Readonly<{
+                                units?: string | undefined;
+                                name: string;
                                 scalar: readonly Readonly<{
                                     value: number;
                                 }>[];
-                                name: string;
-                                units?: string | undefined;
                             }>[]) & {
                                 config: ((val: {
+                                    units?: string | undefined;
+                                    name: string;
                                     scalar: readonly {
                                         value: number;
                                     }[];
-                                    name: string;
-                                    units?: string | undefined;
                                 }) => Readonly<{
+                                    units?: string | undefined;
+                                    name: string;
                                     scalar: readonly Readonly<{
                                         value: number;
                                     }>[];
-                                    name: string;
-                                    units?: string | undefined;
                                 }>) & {
                                     config: {
                                         scalar: ((val: readonly {
@@ -3629,19 +3591,19 @@ declare namespace $.$$ {
                                         };
                                     };
                                     Value: Readonly<{
+                                        units?: string | undefined;
+                                        name: string;
                                         scalar: readonly Readonly<{
                                             value: number;
                                         }>[];
-                                        name: string;
-                                        units?: string | undefined;
                                     }>;
                                 };
                                 Value: readonly Readonly<{
+                                    units?: string | undefined;
+                                    name: string;
                                     scalar: readonly Readonly<{
                                         value: number;
                                     }>[];
-                                    name: string;
-                                    units?: string | undefined;
                                 }>[];
                             };
                             phase: (val: string) => string;
@@ -3656,201 +3618,141 @@ declare namespace $.$$ {
                             };
                         };
                         Value: Readonly<{
-                            chemical_formula: string;
+                            object_repr?: string | undefined;
                             chemical_elements: readonly string[];
-                            condition: readonly Readonly<{
-                                scalar: readonly Readonly<{
-                                    value: number;
-                                }>[];
-                                name: string;
-                                units?: string | undefined;
-                            }>[];
                             phase: string;
                             phase_id: number;
                             entry: string;
-                            object_repr?: string | undefined;
+                            chemical_formula: string;
+                            condition: readonly Readonly<{
+                                units?: string | undefined;
+                                name: string;
+                                scalar: readonly Readonly<{
+                                    value: number;
+                                }>[];
+                            }>[];
                         }>;
                     };
                     measurement: ((val: readonly {
+                        condition?: readonly {
+                            refers_to?: string | undefined;
+                            name: string;
+                            scalar: number;
+                            units: string;
+                        }[] | undefined;
+                        raw_data?: string | undefined;
                         data_type: string;
                         property: {
-                            units: string;
                             scalar?: string | number | undefined;
+                            name: string;
                             matrix: {
                                 bands: readonly (readonly number[])[];
                                 kpoints: readonly (readonly number[])[];
                             } | {
                                 dos: readonly number[];
                                 levels: readonly number[];
-                            } | {
-                                bands: readonly (readonly number[])[];
-                                kpoints: readonly (readonly number[])[];
-                                dos: readonly number[];
-                                levels: readonly number[];
-                            } | {
-                                dos: readonly number[];
-                                levels: readonly number[];
-                                bands: readonly (readonly number[])[];
-                                kpoints: readonly (readonly number[])[];
                             };
-                            name: string;
+                            units: string;
                             category: string;
                             domain: string;
                         };
-                        condition?: readonly {
-                            units: string;
-                            scalar: number;
-                            name: string;
-                            refers_to?: string | undefined;
-                        }[] | undefined;
-                        raw_data?: string | undefined;
                     }[]) => readonly Readonly<{
+                        condition?: readonly Readonly<{
+                            refers_to?: string | undefined;
+                            name: string;
+                            scalar: number;
+                            units: string;
+                        }>[] | undefined;
+                        raw_data?: string | undefined;
                         data_type: string;
                         property: Readonly<{
-                            units: string;
                             scalar?: string | number | undefined;
+                            name: string;
                             matrix: Readonly<{
                                 bands: readonly (readonly number[])[];
                                 kpoints: readonly (readonly number[])[];
                             }> | Readonly<{
                                 dos: readonly number[];
                                 levels: readonly number[];
-                            }> | {
-                                readonly bands: readonly (readonly number[])[];
-                                readonly kpoints: readonly (readonly number[])[];
-                                readonly dos: readonly number[];
-                                readonly levels: readonly number[];
-                            } | {
-                                readonly dos: readonly number[];
-                                readonly levels: readonly number[];
-                                readonly bands: readonly (readonly number[])[];
-                                readonly kpoints: readonly (readonly number[])[];
-                            };
-                            name: string;
+                            }>;
+                            units: string;
                             category: string;
                             domain: string;
                         }>;
-                        condition?: readonly Readonly<{
-                            units: string;
-                            scalar: number;
-                            name: string;
-                            refers_to?: string | undefined;
-                        }>[] | undefined;
-                        raw_data?: string | undefined;
                     }>[]) & {
                         config: ((val: {
+                            condition?: readonly {
+                                refers_to?: string | undefined;
+                                name: string;
+                                scalar: number;
+                                units: string;
+                            }[] | undefined;
+                            raw_data?: string | undefined;
                             data_type: string;
                             property: {
-                                units: string;
                                 scalar?: string | number | undefined;
+                                name: string;
                                 matrix: {
                                     bands: readonly (readonly number[])[];
                                     kpoints: readonly (readonly number[])[];
                                 } | {
                                     dos: readonly number[];
                                     levels: readonly number[];
-                                } | {
-                                    bands: readonly (readonly number[])[];
-                                    kpoints: readonly (readonly number[])[];
-                                    dos: readonly number[];
-                                    levels: readonly number[];
-                                } | {
-                                    dos: readonly number[];
-                                    levels: readonly number[];
-                                    bands: readonly (readonly number[])[];
-                                    kpoints: readonly (readonly number[])[];
                                 };
-                                name: string;
+                                units: string;
                                 category: string;
                                 domain: string;
                             };
-                            condition?: readonly {
-                                units: string;
-                                scalar: number;
-                                name: string;
-                                refers_to?: string | undefined;
-                            }[] | undefined;
-                            raw_data?: string | undefined;
                         }) => Readonly<{
+                            condition?: readonly Readonly<{
+                                refers_to?: string | undefined;
+                                name: string;
+                                scalar: number;
+                                units: string;
+                            }>[] | undefined;
+                            raw_data?: string | undefined;
                             data_type: string;
                             property: Readonly<{
-                                units: string;
                                 scalar?: string | number | undefined;
+                                name: string;
                                 matrix: Readonly<{
                                     bands: readonly (readonly number[])[];
                                     kpoints: readonly (readonly number[])[];
                                 }> | Readonly<{
                                     dos: readonly number[];
                                     levels: readonly number[];
-                                }> | {
-                                    readonly bands: readonly (readonly number[])[];
-                                    readonly kpoints: readonly (readonly number[])[];
-                                    readonly dos: readonly number[];
-                                    readonly levels: readonly number[];
-                                } | {
-                                    readonly dos: readonly number[];
-                                    readonly levels: readonly number[];
-                                    readonly bands: readonly (readonly number[])[];
-                                    readonly kpoints: readonly (readonly number[])[];
-                                };
-                                name: string;
+                                }>;
+                                units: string;
                                 category: string;
                                 domain: string;
                             }>;
-                            condition?: readonly Readonly<{
-                                units: string;
-                                scalar: number;
-                                name: string;
-                                refers_to?: string | undefined;
-                            }>[] | undefined;
-                            raw_data?: string | undefined;
                         }>) & {
                             config: {
                                 data_type: (val: string) => string;
                                 property: ((val: {
-                                    units: string;
                                     scalar?: string | number | undefined;
+                                    name: string;
                                     matrix: {
                                         bands: readonly (readonly number[])[];
                                         kpoints: readonly (readonly number[])[];
                                     } | {
                                         dos: readonly number[];
                                         levels: readonly number[];
-                                    } | {
-                                        bands: readonly (readonly number[])[];
-                                        kpoints: readonly (readonly number[])[];
-                                        dos: readonly number[];
-                                        levels: readonly number[];
-                                    } | {
-                                        dos: readonly number[];
-                                        levels: readonly number[];
-                                        bands: readonly (readonly number[])[];
-                                        kpoints: readonly (readonly number[])[];
                                     };
-                                    name: string;
+                                    units: string;
                                     category: string;
                                     domain: string;
                                 }) => Readonly<{
-                                    units: string;
                                     scalar?: string | number | undefined;
+                                    name: string;
                                     matrix: Readonly<{
                                         bands: readonly (readonly number[])[];
                                         kpoints: readonly (readonly number[])[];
                                     }> | Readonly<{
                                         dos: readonly number[];
                                         levels: readonly number[];
-                                    }> | {
-                                        readonly bands: readonly (readonly number[])[];
-                                        readonly kpoints: readonly (readonly number[])[];
-                                        readonly dos: readonly number[];
-                                        readonly levels: readonly number[];
-                                    } | {
-                                        readonly dos: readonly number[];
-                                        readonly levels: readonly number[];
-                                        readonly bands: readonly (readonly number[])[];
-                                        readonly kpoints: readonly (readonly number[])[];
-                                    };
-                                    name: string;
+                                    }>;
+                                    units: string;
                                     category: string;
                                     domain: string;
                                 }>) & {
@@ -3941,63 +3843,53 @@ declare namespace $.$$ {
                                         domain: (val: string) => string;
                                     };
                                     Value: Readonly<{
-                                        units: string;
                                         scalar?: string | number | undefined;
+                                        name: string;
                                         matrix: Readonly<{
                                             bands: readonly (readonly number[])[];
                                             kpoints: readonly (readonly number[])[];
                                         }> | Readonly<{
                                             dos: readonly number[];
                                             levels: readonly number[];
-                                        }> | {
-                                            readonly bands: readonly (readonly number[])[];
-                                            readonly kpoints: readonly (readonly number[])[];
-                                            readonly dos: readonly number[];
-                                            readonly levels: readonly number[];
-                                        } | {
-                                            readonly dos: readonly number[];
-                                            readonly levels: readonly number[];
-                                            readonly bands: readonly (readonly number[])[];
-                                            readonly kpoints: readonly (readonly number[])[];
-                                        };
-                                        name: string;
+                                        }>;
+                                        units: string;
                                         category: string;
                                         domain: string;
                                     }>;
                                 };
                                 condition: ((val: readonly {
-                                    units: string;
-                                    scalar: number;
-                                    name: string;
                                     refers_to?: string | undefined;
+                                    name: string;
+                                    scalar: number;
+                                    units: string;
                                 }[] | undefined) => readonly Readonly<{
-                                    units: string;
-                                    scalar: number;
-                                    name: string;
                                     refers_to?: string | undefined;
+                                    name: string;
+                                    scalar: number;
+                                    units: string;
                                 }>[] | undefined) & {
                                     config: {
                                         sub: ((val: readonly {
-                                            units: string;
-                                            scalar: number;
-                                            name: string;
                                             refers_to?: string | undefined;
+                                            name: string;
+                                            scalar: number;
+                                            units: string;
                                         }[]) => readonly Readonly<{
-                                            units: string;
-                                            scalar: number;
-                                            name: string;
                                             refers_to?: string | undefined;
+                                            name: string;
+                                            scalar: number;
+                                            units: string;
                                         }>[]) & {
                                             config: ((val: {
-                                                units: string;
-                                                scalar: number;
-                                                name: string;
                                                 refers_to?: string | undefined;
+                                                name: string;
+                                                scalar: number;
+                                                units: string;
                                             }) => Readonly<{
-                                                units: string;
-                                                scalar: number;
-                                                name: string;
                                                 refers_to?: string | undefined;
+                                                name: string;
+                                                scalar: number;
+                                                units: string;
                                             }>) & {
                                                 config: {
                                                     units: (val: string) => string;
@@ -4012,31 +3904,31 @@ declare namespace $.$$ {
                                                     };
                                                 };
                                                 Value: Readonly<{
-                                                    units: string;
-                                                    scalar: number;
-                                                    name: string;
                                                     refers_to?: string | undefined;
+                                                    name: string;
+                                                    scalar: number;
+                                                    units: string;
                                                 }>;
                                             };
                                             Value: readonly Readonly<{
-                                                units: string;
-                                                scalar: number;
-                                                name: string;
                                                 refers_to?: string | undefined;
+                                                name: string;
+                                                scalar: number;
+                                                units: string;
                                             }>[];
                                         };
                                         fallback: (() => readonly Readonly<{
-                                            units: string;
-                                            scalar: number;
-                                            name: string;
                                             refers_to?: string | undefined;
+                                            name: string;
+                                            scalar: number;
+                                            units: string;
                                         }>[]) | undefined;
                                     };
                                     Value: readonly Readonly<{
-                                        units: string;
-                                        scalar: number;
-                                        name: string;
                                         refers_to?: string | undefined;
+                                        name: string;
+                                        scalar: number;
+                                        units: string;
                                     }>[] | undefined;
                                 };
                                 raw_data: ((val: string | undefined) => string | undefined) & {
@@ -4048,136 +3940,106 @@ declare namespace $.$$ {
                                 };
                             };
                             Value: Readonly<{
+                                condition?: readonly Readonly<{
+                                    refers_to?: string | undefined;
+                                    name: string;
+                                    scalar: number;
+                                    units: string;
+                                }>[] | undefined;
+                                raw_data?: string | undefined;
                                 data_type: string;
                                 property: Readonly<{
-                                    units: string;
                                     scalar?: string | number | undefined;
+                                    name: string;
                                     matrix: Readonly<{
                                         bands: readonly (readonly number[])[];
                                         kpoints: readonly (readonly number[])[];
                                     }> | Readonly<{
                                         dos: readonly number[];
                                         levels: readonly number[];
-                                    }> | {
-                                        readonly bands: readonly (readonly number[])[];
-                                        readonly kpoints: readonly (readonly number[])[];
-                                        readonly dos: readonly number[];
-                                        readonly levels: readonly number[];
-                                    } | {
-                                        readonly dos: readonly number[];
-                                        readonly levels: readonly number[];
-                                        readonly bands: readonly (readonly number[])[];
-                                        readonly kpoints: readonly (readonly number[])[];
-                                    };
-                                    name: string;
+                                    }>;
+                                    units: string;
                                     category: string;
                                     domain: string;
                                 }>;
-                                condition?: readonly Readonly<{
-                                    units: string;
-                                    scalar: number;
-                                    name: string;
-                                    refers_to?: string | undefined;
-                                }>[] | undefined;
-                                raw_data?: string | undefined;
                             }>;
                         };
                         Value: readonly Readonly<{
+                            condition?: readonly Readonly<{
+                                refers_to?: string | undefined;
+                                name: string;
+                                scalar: number;
+                                units: string;
+                            }>[] | undefined;
+                            raw_data?: string | undefined;
                             data_type: string;
                             property: Readonly<{
-                                units: string;
                                 scalar?: string | number | undefined;
+                                name: string;
                                 matrix: Readonly<{
                                     bands: readonly (readonly number[])[];
                                     kpoints: readonly (readonly number[])[];
                                 }> | Readonly<{
                                     dos: readonly number[];
                                     levels: readonly number[];
-                                }> | {
-                                    readonly bands: readonly (readonly number[])[];
-                                    readonly kpoints: readonly (readonly number[])[];
-                                    readonly dos: readonly number[];
-                                    readonly levels: readonly number[];
-                                } | {
-                                    readonly dos: readonly number[];
-                                    readonly levels: readonly number[];
-                                    readonly bands: readonly (readonly number[])[];
-                                    readonly kpoints: readonly (readonly number[])[];
-                                };
-                                name: string;
+                                }>;
+                                units: string;
                                 category: string;
                                 domain: string;
                             }>;
-                            condition?: readonly Readonly<{
-                                units: string;
-                                scalar: number;
-                                name: string;
-                                refers_to?: string | undefined;
-                            }>[] | undefined;
-                            raw_data?: string | undefined;
                         }>[];
                     };
                 };
                 Value: Readonly<{
                     material: Readonly<{
-                        chemical_formula: string;
+                        object_repr?: string | undefined;
                         chemical_elements: readonly string[];
-                        condition: readonly Readonly<{
-                            scalar: readonly Readonly<{
-                                value: number;
-                            }>[];
-                            name: string;
-                            units?: string | undefined;
-                        }>[];
                         phase: string;
                         phase_id: number;
                         entry: string;
-                        object_repr?: string | undefined;
+                        chemical_formula: string;
+                        condition: readonly Readonly<{
+                            units?: string | undefined;
+                            name: string;
+                            scalar: readonly Readonly<{
+                                value: number;
+                            }>[];
+                        }>[];
                     }>;
                     measurement: readonly Readonly<{
+                        condition?: readonly Readonly<{
+                            refers_to?: string | undefined;
+                            name: string;
+                            scalar: number;
+                            units: string;
+                        }>[] | undefined;
+                        raw_data?: string | undefined;
                         data_type: string;
                         property: Readonly<{
-                            units: string;
                             scalar?: string | number | undefined;
+                            name: string;
                             matrix: Readonly<{
                                 bands: readonly (readonly number[])[];
                                 kpoints: readonly (readonly number[])[];
                             }> | Readonly<{
                                 dos: readonly number[];
                                 levels: readonly number[];
-                            }> | {
-                                readonly bands: readonly (readonly number[])[];
-                                readonly kpoints: readonly (readonly number[])[];
-                                readonly dos: readonly number[];
-                                readonly levels: readonly number[];
-                            } | {
-                                readonly dos: readonly number[];
-                                readonly levels: readonly number[];
-                                readonly bands: readonly (readonly number[])[];
-                                readonly kpoints: readonly (readonly number[])[];
-                            };
-                            name: string;
+                            }>;
+                            units: string;
                             category: string;
                             domain: string;
                         }>;
-                        condition?: readonly Readonly<{
-                            units: string;
-                            scalar: number;
-                            name: string;
-                            refers_to?: string | undefined;
-                        }>[] | undefined;
-                        raw_data?: string | undefined;
                     }>[];
                 }>;
             };
             version: (val: string) => string;
             object_type: (val: string) => string;
             reference: ((val: {
-                entry: string;
                 phase?: string | undefined;
+                entry: string;
             }) => Readonly<{
-                entry: string;
                 phase?: string | undefined;
+                entry: string;
             }>) & {
                 config: {
                     entry: (val: string) => string;
@@ -4190,129 +4052,109 @@ declare namespace $.$$ {
                     };
                 };
                 Value: Readonly<{
-                    entry: string;
                     phase?: string | undefined;
+                    entry: string;
                 }>;
             };
         };
         Value: Readonly<{
+            object_type: string;
             sample: Readonly<{
                 material: Readonly<{
-                    chemical_formula: string;
+                    object_repr?: string | undefined;
                     chemical_elements: readonly string[];
-                    condition: readonly Readonly<{
-                        scalar: readonly Readonly<{
-                            value: number;
-                        }>[];
-                        name: string;
-                        units?: string | undefined;
-                    }>[];
                     phase: string;
                     phase_id: number;
                     entry: string;
-                    object_repr?: string | undefined;
+                    chemical_formula: string;
+                    condition: readonly Readonly<{
+                        units?: string | undefined;
+                        name: string;
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                    }>[];
                 }>;
                 measurement: readonly Readonly<{
+                    condition?: readonly Readonly<{
+                        refers_to?: string | undefined;
+                        name: string;
+                        scalar: number;
+                        units: string;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
                     data_type: string;
                     property: Readonly<{
-                        units: string;
                         scalar?: string | number | undefined;
+                        name: string;
                         matrix: Readonly<{
                             bands: readonly (readonly number[])[];
                             kpoints: readonly (readonly number[])[];
                         }> | Readonly<{
                             dos: readonly number[];
                             levels: readonly number[];
-                        }> | {
-                            readonly bands: readonly (readonly number[])[];
-                            readonly kpoints: readonly (readonly number[])[];
-                            readonly dos: readonly number[];
-                            readonly levels: readonly number[];
-                        } | {
-                            readonly dos: readonly number[];
-                            readonly levels: readonly number[];
-                            readonly bands: readonly (readonly number[])[];
-                            readonly kpoints: readonly (readonly number[])[];
-                        };
-                        name: string;
+                        }>;
+                        units: string;
                         category: string;
                         domain: string;
                     }>;
-                    condition?: readonly Readonly<{
-                        units: string;
-                        scalar: number;
-                        name: string;
-                        refers_to?: string | undefined;
-                    }>[] | undefined;
-                    raw_data?: string | undefined;
                 }>[];
             }>;
             version: string;
-            object_type: string;
             reference: Readonly<{
-                entry: string;
                 phase?: string | undefined;
+                entry: string;
             }>;
         }>;
     };
     export class $visavis_eigen extends $.$visavis_eigen {
         json(): Readonly<{
+            object_type: string;
             sample: Readonly<{
                 material: Readonly<{
-                    chemical_formula: string;
+                    object_repr?: string | undefined;
                     chemical_elements: readonly string[];
-                    condition: readonly Readonly<{
-                        scalar: readonly Readonly<{
-                            value: number;
-                        }>[];
-                        name: string;
-                        units?: string | undefined;
-                    }>[];
                     phase: string;
                     phase_id: number;
                     entry: string;
-                    object_repr?: string | undefined;
+                    chemical_formula: string;
+                    condition: readonly Readonly<{
+                        units?: string | undefined;
+                        name: string;
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                    }>[];
                 }>;
                 measurement: readonly Readonly<{
+                    condition?: readonly Readonly<{
+                        refers_to?: string | undefined;
+                        name: string;
+                        scalar: number;
+                        units: string;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
                     data_type: string;
                     property: Readonly<{
-                        units: string;
                         scalar?: string | number | undefined;
+                        name: string;
                         matrix: Readonly<{
                             bands: readonly (readonly number[])[];
                             kpoints: readonly (readonly number[])[];
                         }> | Readonly<{
                             dos: readonly number[];
                             levels: readonly number[];
-                        }> | {
-                            readonly bands: readonly (readonly number[])[];
-                            readonly kpoints: readonly (readonly number[])[];
-                            readonly dos: readonly number[];
-                            readonly levels: readonly number[];
-                        } | {
-                            readonly dos: readonly number[];
-                            readonly levels: readonly number[];
-                            readonly bands: readonly (readonly number[])[];
-                            readonly kpoints: readonly (readonly number[])[];
-                        };
-                        name: string;
+                        }>;
+                        units: string;
                         category: string;
                         domain: string;
                     }>;
-                    condition?: readonly Readonly<{
-                        units: string;
-                        scalar: number;
-                        name: string;
-                        refers_to?: string | undefined;
-                    }>[] | undefined;
-                    raw_data?: string | undefined;
                 }>[];
             }>;
             version: string;
-            object_type: string;
             reference: Readonly<{
-                entry: string;
                 phase?: string | undefined;
+                entry: string;
             }>;
         }>;
         bands_matrix(): Bands_matrix | null;
@@ -4369,37 +4211,37 @@ declare namespace $ {
 declare namespace $.$$ {
     const $visavis_pie_json: ((val: {
         payload: readonly {
-            facet: "props" | "elements" | "classes" | "lattices";
-            value: string;
             count: number;
+            value: string;
+            facet: "props" | "elements" | "classes" | "lattices";
         }[];
         total_count: number;
     }) => Readonly<{
         payload: readonly Readonly<{
-            facet: "props" | "elements" | "classes" | "lattices";
-            value: string;
             count: number;
+            value: string;
+            facet: "props" | "elements" | "classes" | "lattices";
         }>[];
         total_count: number;
     }>) & {
         config: {
             payload: ((val: readonly {
-                facet: "props" | "elements" | "classes" | "lattices";
-                value: string;
                 count: number;
+                value: string;
+                facet: "props" | "elements" | "classes" | "lattices";
             }[]) => readonly Readonly<{
-                facet: "props" | "elements" | "classes" | "lattices";
-                value: string;
                 count: number;
+                value: string;
+                facet: "props" | "elements" | "classes" | "lattices";
             }>[]) & {
                 config: ((val: {
-                    facet: "props" | "elements" | "classes" | "lattices";
-                    value: string;
                     count: number;
+                    value: string;
+                    facet: "props" | "elements" | "classes" | "lattices";
                 }) => Readonly<{
-                    facet: "props" | "elements" | "classes" | "lattices";
-                    value: string;
                     count: number;
+                    value: string;
+                    facet: "props" | "elements" | "classes" | "lattices";
                 }>) & {
                     config: {
                         facet: ((value: "props" | "elements" | "classes" | "lattices") => "props" | "elements" | "classes" | "lattices") & {
@@ -4418,24 +4260,24 @@ declare namespace $.$$ {
                         count: (val: number) => number;
                     };
                     Value: Readonly<{
-                        facet: "props" | "elements" | "classes" | "lattices";
-                        value: string;
                         count: number;
+                        value: string;
+                        facet: "props" | "elements" | "classes" | "lattices";
                     }>;
                 };
                 Value: readonly Readonly<{
-                    facet: "props" | "elements" | "classes" | "lattices";
-                    value: string;
                     count: number;
+                    value: string;
+                    facet: "props" | "elements" | "classes" | "lattices";
                 }>[];
             };
             total_count: (val: number) => number;
         };
         Value: Readonly<{
             payload: readonly Readonly<{
-                facet: "props" | "elements" | "classes" | "lattices";
-                value: string;
                 count: number;
+                value: string;
+                facet: "props" | "elements" | "classes" | "lattices";
             }>[];
             total_count: number;
         }>;
@@ -4443,9 +4285,9 @@ declare namespace $.$$ {
     class $visavis_pie extends $.$visavis_pie {
         json(): Readonly<{
             payload: readonly Readonly<{
-                facet: "props" | "elements" | "classes" | "lattices";
-                value: string;
                 count: number;
+                value: string;
+                facet: "props" | "elements" | "classes" | "lattices";
             }>[];
             total_count: number;
         }>;
@@ -4484,189 +4326,189 @@ declare namespace $ {
 
 declare namespace $.$$ {
     const $visavis_scatter_json: ((val: {
+        object_type: string;
         sample: {
             material: {
-                chemical_formula: string;
+                object_repr?: string | undefined;
                 chemical_elements: readonly string[];
+                phase: string;
+                phase_id: number;
+                entry: string;
+                chemical_formula: string;
                 condition: readonly {
+                    units?: string | undefined;
+                    name: string;
                     scalar: readonly {
                         value: number;
                     }[];
-                    name: string;
-                    units?: string | undefined;
                 }[];
-                phase: string;
-                phase_id: number;
-                entry: string;
-                object_repr?: string | undefined;
             };
             measurement: readonly {
+                condition?: readonly {
+                    refers_to?: string | undefined;
+                    name: string;
+                    scalar: number;
+                    units: string;
+                }[] | undefined;
+                raw_data?: string | undefined;
                 data_type: string;
                 property: {
-                    units: string;
                     scalar?: string | number | undefined;
-                    matrix: readonly (readonly number[])[];
                     name: string;
+                    matrix: readonly (readonly number[])[];
+                    units: string;
                     category: string;
                     domain: string;
                 };
-                condition?: readonly {
-                    units: string;
-                    scalar: number;
-                    name: string;
-                    refers_to?: string | undefined;
-                }[] | undefined;
-                raw_data?: string | undefined;
             }[];
         };
         version: string;
-        object_type: string;
         reference: {
-            entry: string;
             phase?: string | undefined;
+            entry: string;
         };
     }) => Readonly<{
+        object_type: string;
         sample: Readonly<{
             material: Readonly<{
-                chemical_formula: string;
+                object_repr?: string | undefined;
                 chemical_elements: readonly string[];
-                condition: readonly Readonly<{
-                    scalar: readonly Readonly<{
-                        value: number;
-                    }>[];
-                    name: string;
-                    units?: string | undefined;
-                }>[];
                 phase: string;
                 phase_id: number;
                 entry: string;
-                object_repr?: string | undefined;
+                chemical_formula: string;
+                condition: readonly Readonly<{
+                    units?: string | undefined;
+                    name: string;
+                    scalar: readonly Readonly<{
+                        value: number;
+                    }>[];
+                }>[];
             }>;
             measurement: readonly Readonly<{
+                condition?: readonly Readonly<{
+                    refers_to?: string | undefined;
+                    name: string;
+                    scalar: number;
+                    units: string;
+                }>[] | undefined;
+                raw_data?: string | undefined;
                 data_type: string;
                 property: Readonly<{
-                    units: string;
                     scalar?: string | number | undefined;
-                    matrix: readonly (readonly number[])[];
                     name: string;
+                    matrix: readonly (readonly number[])[];
+                    units: string;
                     category: string;
                     domain: string;
                 }>;
-                condition?: readonly Readonly<{
-                    units: string;
-                    scalar: number;
-                    name: string;
-                    refers_to?: string | undefined;
-                }>[] | undefined;
-                raw_data?: string | undefined;
             }>[];
         }>;
         version: string;
-        object_type: string;
         reference: Readonly<{
-            entry: string;
             phase?: string | undefined;
+            entry: string;
         }>;
     }>) & {
         config: {
             sample: ((val: {
                 material: {
-                    chemical_formula: string;
+                    object_repr?: string | undefined;
                     chemical_elements: readonly string[];
+                    phase: string;
+                    phase_id: number;
+                    entry: string;
+                    chemical_formula: string;
                     condition: readonly {
+                        units?: string | undefined;
+                        name: string;
                         scalar: readonly {
                             value: number;
                         }[];
-                        name: string;
-                        units?: string | undefined;
                     }[];
-                    phase: string;
-                    phase_id: number;
-                    entry: string;
-                    object_repr?: string | undefined;
                 };
                 measurement: readonly {
+                    condition?: readonly {
+                        refers_to?: string | undefined;
+                        name: string;
+                        scalar: number;
+                        units: string;
+                    }[] | undefined;
+                    raw_data?: string | undefined;
                     data_type: string;
                     property: {
-                        units: string;
                         scalar?: string | number | undefined;
-                        matrix: readonly (readonly number[])[];
                         name: string;
+                        matrix: readonly (readonly number[])[];
+                        units: string;
                         category: string;
                         domain: string;
                     };
-                    condition?: readonly {
-                        units: string;
-                        scalar: number;
-                        name: string;
-                        refers_to?: string | undefined;
-                    }[] | undefined;
-                    raw_data?: string | undefined;
                 }[];
             }) => Readonly<{
                 material: Readonly<{
-                    chemical_formula: string;
+                    object_repr?: string | undefined;
                     chemical_elements: readonly string[];
-                    condition: readonly Readonly<{
-                        scalar: readonly Readonly<{
-                            value: number;
-                        }>[];
-                        name: string;
-                        units?: string | undefined;
-                    }>[];
                     phase: string;
                     phase_id: number;
                     entry: string;
-                    object_repr?: string | undefined;
+                    chemical_formula: string;
+                    condition: readonly Readonly<{
+                        units?: string | undefined;
+                        name: string;
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                    }>[];
                 }>;
                 measurement: readonly Readonly<{
+                    condition?: readonly Readonly<{
+                        refers_to?: string | undefined;
+                        name: string;
+                        scalar: number;
+                        units: string;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
                     data_type: string;
                     property: Readonly<{
-                        units: string;
                         scalar?: string | number | undefined;
-                        matrix: readonly (readonly number[])[];
                         name: string;
+                        matrix: readonly (readonly number[])[];
+                        units: string;
                         category: string;
                         domain: string;
                     }>;
-                    condition?: readonly Readonly<{
-                        units: string;
-                        scalar: number;
-                        name: string;
-                        refers_to?: string | undefined;
-                    }>[] | undefined;
-                    raw_data?: string | undefined;
                 }>[];
             }>) & {
                 config: {
                     material: ((val: {
-                        chemical_formula: string;
+                        object_repr?: string | undefined;
                         chemical_elements: readonly string[];
+                        phase: string;
+                        phase_id: number;
+                        entry: string;
+                        chemical_formula: string;
                         condition: readonly {
+                            units?: string | undefined;
+                            name: string;
                             scalar: readonly {
                                 value: number;
                             }[];
-                            name: string;
-                            units?: string | undefined;
                         }[];
+                    }) => Readonly<{
+                        object_repr?: string | undefined;
+                        chemical_elements: readonly string[];
                         phase: string;
                         phase_id: number;
                         entry: string;
-                        object_repr?: string | undefined;
-                    }) => Readonly<{
                         chemical_formula: string;
-                        chemical_elements: readonly string[];
                         condition: readonly Readonly<{
+                            units?: string | undefined;
+                            name: string;
                             scalar: readonly Readonly<{
                                 value: number;
                             }>[];
-                            name: string;
-                            units?: string | undefined;
                         }>[];
-                        phase: string;
-                        phase_id: number;
-                        entry: string;
-                        object_repr?: string | undefined;
                     }>) & {
                         config: {
                             chemical_formula: (val: string) => string;
@@ -4675,30 +4517,30 @@ declare namespace $.$$ {
                                 Value: readonly string[];
                             };
                             condition: ((val: readonly {
+                                units?: string | undefined;
+                                name: string;
                                 scalar: readonly {
                                     value: number;
                                 }[];
-                                name: string;
-                                units?: string | undefined;
                             }[]) => readonly Readonly<{
+                                units?: string | undefined;
+                                name: string;
                                 scalar: readonly Readonly<{
                                     value: number;
                                 }>[];
-                                name: string;
-                                units?: string | undefined;
                             }>[]) & {
                                 config: ((val: {
+                                    units?: string | undefined;
+                                    name: string;
                                     scalar: readonly {
                                         value: number;
                                     }[];
-                                    name: string;
-                                    units?: string | undefined;
                                 }) => Readonly<{
+                                    units?: string | undefined;
+                                    name: string;
                                     scalar: readonly Readonly<{
                                         value: number;
                                     }>[];
-                                    name: string;
-                                    units?: string | undefined;
                                 }>) & {
                                     config: {
                                         scalar: ((val: readonly {
@@ -4732,19 +4574,19 @@ declare namespace $.$$ {
                                         };
                                     };
                                     Value: Readonly<{
+                                        units?: string | undefined;
+                                        name: string;
                                         scalar: readonly Readonly<{
                                             value: number;
                                         }>[];
-                                        name: string;
-                                        units?: string | undefined;
                                     }>;
                                 };
                                 Value: readonly Readonly<{
+                                    units?: string | undefined;
+                                    name: string;
                                     scalar: readonly Readonly<{
                                         value: number;
                                     }>[];
-                                    name: string;
-                                    units?: string | undefined;
                                 }>[];
                             };
                             phase: (val: string) => string;
@@ -4759,105 +4601,105 @@ declare namespace $.$$ {
                             };
                         };
                         Value: Readonly<{
-                            chemical_formula: string;
+                            object_repr?: string | undefined;
                             chemical_elements: readonly string[];
-                            condition: readonly Readonly<{
-                                scalar: readonly Readonly<{
-                                    value: number;
-                                }>[];
-                                name: string;
-                                units?: string | undefined;
-                            }>[];
                             phase: string;
                             phase_id: number;
                             entry: string;
-                            object_repr?: string | undefined;
+                            chemical_formula: string;
+                            condition: readonly Readonly<{
+                                units?: string | undefined;
+                                name: string;
+                                scalar: readonly Readonly<{
+                                    value: number;
+                                }>[];
+                            }>[];
                         }>;
                     };
                     measurement: ((val: readonly {
+                        condition?: readonly {
+                            refers_to?: string | undefined;
+                            name: string;
+                            scalar: number;
+                            units: string;
+                        }[] | undefined;
+                        raw_data?: string | undefined;
                         data_type: string;
                         property: {
-                            units: string;
                             scalar?: string | number | undefined;
-                            matrix: readonly (readonly number[])[];
                             name: string;
+                            matrix: readonly (readonly number[])[];
+                            units: string;
                             category: string;
                             domain: string;
                         };
-                        condition?: readonly {
-                            units: string;
-                            scalar: number;
-                            name: string;
-                            refers_to?: string | undefined;
-                        }[] | undefined;
-                        raw_data?: string | undefined;
                     }[]) => readonly Readonly<{
+                        condition?: readonly Readonly<{
+                            refers_to?: string | undefined;
+                            name: string;
+                            scalar: number;
+                            units: string;
+                        }>[] | undefined;
+                        raw_data?: string | undefined;
                         data_type: string;
                         property: Readonly<{
-                            units: string;
                             scalar?: string | number | undefined;
-                            matrix: readonly (readonly number[])[];
                             name: string;
+                            matrix: readonly (readonly number[])[];
+                            units: string;
                             category: string;
                             domain: string;
                         }>;
-                        condition?: readonly Readonly<{
-                            units: string;
-                            scalar: number;
-                            name: string;
-                            refers_to?: string | undefined;
-                        }>[] | undefined;
-                        raw_data?: string | undefined;
                     }>[]) & {
                         config: ((val: {
+                            condition?: readonly {
+                                refers_to?: string | undefined;
+                                name: string;
+                                scalar: number;
+                                units: string;
+                            }[] | undefined;
+                            raw_data?: string | undefined;
                             data_type: string;
                             property: {
-                                units: string;
                                 scalar?: string | number | undefined;
-                                matrix: readonly (readonly number[])[];
                                 name: string;
+                                matrix: readonly (readonly number[])[];
+                                units: string;
                                 category: string;
                                 domain: string;
                             };
-                            condition?: readonly {
-                                units: string;
-                                scalar: number;
-                                name: string;
-                                refers_to?: string | undefined;
-                            }[] | undefined;
-                            raw_data?: string | undefined;
                         }) => Readonly<{
+                            condition?: readonly Readonly<{
+                                refers_to?: string | undefined;
+                                name: string;
+                                scalar: number;
+                                units: string;
+                            }>[] | undefined;
+                            raw_data?: string | undefined;
                             data_type: string;
                             property: Readonly<{
-                                units: string;
                                 scalar?: string | number | undefined;
-                                matrix: readonly (readonly number[])[];
                                 name: string;
+                                matrix: readonly (readonly number[])[];
+                                units: string;
                                 category: string;
                                 domain: string;
                             }>;
-                            condition?: readonly Readonly<{
-                                units: string;
-                                scalar: number;
-                                name: string;
-                                refers_to?: string | undefined;
-                            }>[] | undefined;
-                            raw_data?: string | undefined;
                         }>) & {
                             config: {
                                 data_type: (val: string) => string;
                                 property: ((val: {
-                                    units: string;
                                     scalar?: string | number | undefined;
-                                    matrix: readonly (readonly number[])[];
                                     name: string;
+                                    matrix: readonly (readonly number[])[];
+                                    units: string;
                                     category: string;
                                     domain: string;
                                 }) => Readonly<{
-                                    units: string;
                                     scalar?: string | number | undefined;
-                                    matrix: readonly (readonly number[])[];
                                     name: string;
+                                    matrix: readonly (readonly number[])[];
+                                    units: string;
                                     category: string;
                                     domain: string;
                                 }>) & {
@@ -4885,47 +4727,47 @@ declare namespace $.$$ {
                                         domain: (val: string) => string;
                                     };
                                     Value: Readonly<{
-                                        units: string;
                                         scalar?: string | number | undefined;
-                                        matrix: readonly (readonly number[])[];
                                         name: string;
+                                        matrix: readonly (readonly number[])[];
+                                        units: string;
                                         category: string;
                                         domain: string;
                                     }>;
                                 };
                                 condition: ((val: readonly {
-                                    units: string;
-                                    scalar: number;
-                                    name: string;
                                     refers_to?: string | undefined;
+                                    name: string;
+                                    scalar: number;
+                                    units: string;
                                 }[] | undefined) => readonly Readonly<{
-                                    units: string;
-                                    scalar: number;
-                                    name: string;
                                     refers_to?: string | undefined;
+                                    name: string;
+                                    scalar: number;
+                                    units: string;
                                 }>[] | undefined) & {
                                     config: {
                                         sub: ((val: readonly {
-                                            units: string;
-                                            scalar: number;
-                                            name: string;
                                             refers_to?: string | undefined;
+                                            name: string;
+                                            scalar: number;
+                                            units: string;
                                         }[]) => readonly Readonly<{
-                                            units: string;
-                                            scalar: number;
-                                            name: string;
                                             refers_to?: string | undefined;
+                                            name: string;
+                                            scalar: number;
+                                            units: string;
                                         }>[]) & {
                                             config: ((val: {
-                                                units: string;
-                                                scalar: number;
-                                                name: string;
                                                 refers_to?: string | undefined;
+                                                name: string;
+                                                scalar: number;
+                                                units: string;
                                             }) => Readonly<{
-                                                units: string;
-                                                scalar: number;
-                                                name: string;
                                                 refers_to?: string | undefined;
+                                                name: string;
+                                                scalar: number;
+                                                units: string;
                                             }>) & {
                                                 config: {
                                                     units: (val: string) => string;
@@ -4940,31 +4782,31 @@ declare namespace $.$$ {
                                                     };
                                                 };
                                                 Value: Readonly<{
-                                                    units: string;
-                                                    scalar: number;
-                                                    name: string;
                                                     refers_to?: string | undefined;
+                                                    name: string;
+                                                    scalar: number;
+                                                    units: string;
                                                 }>;
                                             };
                                             Value: readonly Readonly<{
-                                                units: string;
-                                                scalar: number;
-                                                name: string;
                                                 refers_to?: string | undefined;
+                                                name: string;
+                                                scalar: number;
+                                                units: string;
                                             }>[];
                                         };
                                         fallback: (() => readonly Readonly<{
-                                            units: string;
-                                            scalar: number;
-                                            name: string;
                                             refers_to?: string | undefined;
+                                            name: string;
+                                            scalar: number;
+                                            units: string;
                                         }>[]) | undefined;
                                     };
                                     Value: readonly Readonly<{
-                                        units: string;
-                                        scalar: number;
-                                        name: string;
                                         refers_to?: string | undefined;
+                                        name: string;
+                                        scalar: number;
+                                        units: string;
                                     }>[] | undefined;
                                 };
                                 raw_data: ((val: string | undefined) => string | undefined) & {
@@ -4976,88 +4818,88 @@ declare namespace $.$$ {
                                 };
                             };
                             Value: Readonly<{
+                                condition?: readonly Readonly<{
+                                    refers_to?: string | undefined;
+                                    name: string;
+                                    scalar: number;
+                                    units: string;
+                                }>[] | undefined;
+                                raw_data?: string | undefined;
                                 data_type: string;
                                 property: Readonly<{
-                                    units: string;
                                     scalar?: string | number | undefined;
-                                    matrix: readonly (readonly number[])[];
                                     name: string;
+                                    matrix: readonly (readonly number[])[];
+                                    units: string;
                                     category: string;
                                     domain: string;
                                 }>;
-                                condition?: readonly Readonly<{
-                                    units: string;
-                                    scalar: number;
-                                    name: string;
-                                    refers_to?: string | undefined;
-                                }>[] | undefined;
-                                raw_data?: string | undefined;
                             }>;
                         };
                         Value: readonly Readonly<{
+                            condition?: readonly Readonly<{
+                                refers_to?: string | undefined;
+                                name: string;
+                                scalar: number;
+                                units: string;
+                            }>[] | undefined;
+                            raw_data?: string | undefined;
                             data_type: string;
                             property: Readonly<{
-                                units: string;
                                 scalar?: string | number | undefined;
-                                matrix: readonly (readonly number[])[];
                                 name: string;
+                                matrix: readonly (readonly number[])[];
+                                units: string;
                                 category: string;
                                 domain: string;
                             }>;
-                            condition?: readonly Readonly<{
-                                units: string;
-                                scalar: number;
-                                name: string;
-                                refers_to?: string | undefined;
-                            }>[] | undefined;
-                            raw_data?: string | undefined;
                         }>[];
                     };
                 };
                 Value: Readonly<{
                     material: Readonly<{
-                        chemical_formula: string;
+                        object_repr?: string | undefined;
                         chemical_elements: readonly string[];
-                        condition: readonly Readonly<{
-                            scalar: readonly Readonly<{
-                                value: number;
-                            }>[];
-                            name: string;
-                            units?: string | undefined;
-                        }>[];
                         phase: string;
                         phase_id: number;
                         entry: string;
-                        object_repr?: string | undefined;
+                        chemical_formula: string;
+                        condition: readonly Readonly<{
+                            units?: string | undefined;
+                            name: string;
+                            scalar: readonly Readonly<{
+                                value: number;
+                            }>[];
+                        }>[];
                     }>;
                     measurement: readonly Readonly<{
+                        condition?: readonly Readonly<{
+                            refers_to?: string | undefined;
+                            name: string;
+                            scalar: number;
+                            units: string;
+                        }>[] | undefined;
+                        raw_data?: string | undefined;
                         data_type: string;
                         property: Readonly<{
-                            units: string;
                             scalar?: string | number | undefined;
-                            matrix: readonly (readonly number[])[];
                             name: string;
+                            matrix: readonly (readonly number[])[];
+                            units: string;
                             category: string;
                             domain: string;
                         }>;
-                        condition?: readonly Readonly<{
-                            units: string;
-                            scalar: number;
-                            name: string;
-                            refers_to?: string | undefined;
-                        }>[] | undefined;
-                        raw_data?: string | undefined;
                     }>[];
                 }>;
             };
             version: (val: string) => string;
             object_type: (val: string) => string;
             reference: ((val: {
-                entry: string;
                 phase?: string | undefined;
+                entry: string;
             }) => Readonly<{
-                entry: string;
                 phase?: string | undefined;
+                entry: string;
             }>) & {
                 config: {
                     entry: (val: string) => string;
@@ -5070,97 +4912,97 @@ declare namespace $.$$ {
                     };
                 };
                 Value: Readonly<{
-                    entry: string;
                     phase?: string | undefined;
+                    entry: string;
                 }>;
             };
         };
         Value: Readonly<{
+            object_type: string;
             sample: Readonly<{
                 material: Readonly<{
-                    chemical_formula: string;
+                    object_repr?: string | undefined;
                     chemical_elements: readonly string[];
-                    condition: readonly Readonly<{
-                        scalar: readonly Readonly<{
-                            value: number;
-                        }>[];
-                        name: string;
-                        units?: string | undefined;
-                    }>[];
                     phase: string;
                     phase_id: number;
                     entry: string;
-                    object_repr?: string | undefined;
+                    chemical_formula: string;
+                    condition: readonly Readonly<{
+                        units?: string | undefined;
+                        name: string;
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                    }>[];
                 }>;
                 measurement: readonly Readonly<{
+                    condition?: readonly Readonly<{
+                        refers_to?: string | undefined;
+                        name: string;
+                        scalar: number;
+                        units: string;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
                     data_type: string;
                     property: Readonly<{
-                        units: string;
                         scalar?: string | number | undefined;
-                        matrix: readonly (readonly number[])[];
                         name: string;
+                        matrix: readonly (readonly number[])[];
+                        units: string;
                         category: string;
                         domain: string;
                     }>;
-                    condition?: readonly Readonly<{
-                        units: string;
-                        scalar: number;
-                        name: string;
-                        refers_to?: string | undefined;
-                    }>[] | undefined;
-                    raw_data?: string | undefined;
                 }>[];
             }>;
             version: string;
-            object_type: string;
             reference: Readonly<{
-                entry: string;
                 phase?: string | undefined;
+                entry: string;
             }>;
         }>;
     };
     class $visavis_scatter extends $.$visavis_scatter {
         json(): Readonly<{
+            object_type: string;
             sample: Readonly<{
                 material: Readonly<{
-                    chemical_formula: string;
+                    object_repr?: string | undefined;
                     chemical_elements: readonly string[];
-                    condition: readonly Readonly<{
-                        scalar: readonly Readonly<{
-                            value: number;
-                        }>[];
-                        name: string;
-                        units?: string | undefined;
-                    }>[];
                     phase: string;
                     phase_id: number;
                     entry: string;
-                    object_repr?: string | undefined;
+                    chemical_formula: string;
+                    condition: readonly Readonly<{
+                        units?: string | undefined;
+                        name: string;
+                        scalar: readonly Readonly<{
+                            value: number;
+                        }>[];
+                    }>[];
                 }>;
                 measurement: readonly Readonly<{
+                    condition?: readonly Readonly<{
+                        refers_to?: string | undefined;
+                        name: string;
+                        scalar: number;
+                        units: string;
+                    }>[] | undefined;
+                    raw_data?: string | undefined;
                     data_type: string;
                     property: Readonly<{
-                        units: string;
                         scalar?: string | number | undefined;
-                        matrix: readonly (readonly number[])[];
                         name: string;
+                        matrix: readonly (readonly number[])[];
+                        units: string;
                         category: string;
                         domain: string;
                     }>;
-                    condition?: readonly Readonly<{
-                        units: string;
-                        scalar: number;
-                        name: string;
-                        refers_to?: string | undefined;
-                    }>[] | undefined;
-                    raw_data?: string | undefined;
                 }>[];
             }>;
             version: string;
-            object_type: string;
             reference: Readonly<{
-                entry: string;
                 phase?: string | undefined;
+                entry: string;
             }>;
         }>;
         subscribe_events(): void;
@@ -5226,62 +5068,62 @@ declare namespace $ {
 
 declare namespace $.$$ {
     const $visavis_customscatter_json: ((val: {
-        plots: readonly {
-            name: string;
-            type: string;
-            mode: string;
-            interpolation: string;
-            x: readonly number[];
-            y: readonly number[];
-        }[];
         xtitle?: string | undefined;
         ytitle?: string | undefined;
+        plots: readonly {
+            type: string;
+            name: string;
+            x: readonly number[];
+            y: readonly number[];
+            mode: string;
+            interpolation: string;
+        }[];
         xlog: boolean | null;
         ylog: boolean | null;
     }) => Readonly<{
-        plots: readonly Readonly<{
-            name: string;
-            type: string;
-            mode: string;
-            interpolation: string;
-            x: readonly number[];
-            y: readonly number[];
-        }>[];
         xtitle?: string | undefined;
         ytitle?: string | undefined;
+        plots: readonly Readonly<{
+            type: string;
+            name: string;
+            x: readonly number[];
+            y: readonly number[];
+            mode: string;
+            interpolation: string;
+        }>[];
         xlog: boolean | null;
         ylog: boolean | null;
     }>) & {
         config: {
             plots: ((val: readonly {
-                name: string;
                 type: string;
-                mode: string;
-                interpolation: string;
+                name: string;
                 x: readonly number[];
                 y: readonly number[];
+                mode: string;
+                interpolation: string;
             }[]) => readonly Readonly<{
-                name: string;
                 type: string;
-                mode: string;
-                interpolation: string;
+                name: string;
                 x: readonly number[];
                 y: readonly number[];
+                mode: string;
+                interpolation: string;
             }>[]) & {
                 config: ((val: {
-                    name: string;
                     type: string;
-                    mode: string;
-                    interpolation: string;
+                    name: string;
                     x: readonly number[];
                     y: readonly number[];
+                    mode: string;
+                    interpolation: string;
                 }) => Readonly<{
-                    name: string;
                     type: string;
-                    mode: string;
-                    interpolation: string;
+                    name: string;
                     x: readonly number[];
                     y: readonly number[];
+                    mode: string;
+                    interpolation: string;
                 }>) & {
                     config: {
                         name: (val: string) => string;
@@ -5298,21 +5140,21 @@ declare namespace $.$$ {
                         };
                     };
                     Value: Readonly<{
-                        name: string;
                         type: string;
-                        mode: string;
-                        interpolation: string;
+                        name: string;
                         x: readonly number[];
                         y: readonly number[];
+                        mode: string;
+                        interpolation: string;
                     }>;
                 };
                 Value: readonly Readonly<{
-                    name: string;
                     type: string;
-                    mode: string;
-                    interpolation: string;
+                    name: string;
                     x: readonly number[];
                     y: readonly number[];
+                    mode: string;
+                    interpolation: string;
                 }>[];
             };
             xtitle: ((val: string | undefined) => string | undefined) & {
@@ -5339,32 +5181,32 @@ declare namespace $.$$ {
             };
         };
         Value: Readonly<{
-            plots: readonly Readonly<{
-                name: string;
-                type: string;
-                mode: string;
-                interpolation: string;
-                x: readonly number[];
-                y: readonly number[];
-            }>[];
             xtitle?: string | undefined;
             ytitle?: string | undefined;
+            plots: readonly Readonly<{
+                type: string;
+                name: string;
+                x: readonly number[];
+                y: readonly number[];
+                mode: string;
+                interpolation: string;
+            }>[];
             xlog: boolean | null;
             ylog: boolean | null;
         }>;
     };
     class $visavis_customscatter extends $.$visavis_customscatter {
         json(): Readonly<{
-            plots: readonly Readonly<{
-                name: string;
-                type: string;
-                mode: string;
-                interpolation: string;
-                x: readonly number[];
-                y: readonly number[];
-            }>[];
             xtitle?: string | undefined;
             ytitle?: string | undefined;
+            plots: readonly Readonly<{
+                type: string;
+                name: string;
+                x: readonly number[];
+                y: readonly number[];
+                mode: string;
+                interpolation: string;
+            }>[];
             xlog: boolean | null;
             ylog: boolean | null;
         }>;
@@ -5413,12 +5255,12 @@ declare namespace $.$$ {
             };
         };
         data(): readonly Readonly<{
-            name: string;
             type: string;
-            mode: string;
-            interpolation: string;
+            name: string;
             x: readonly number[];
             y: readonly number[];
+            mode: string;
+            interpolation: string;
         }>[];
     }
 }
@@ -5525,22 +5367,22 @@ declare namespace $.$$ {
     };
     export const $visavis_graph_json: ((val: {
         error: string | null;
-        warning: string | null;
-        graph_rel: string;
         payload: readonly {
-            source: string;
             type: string;
             target: string | number;
+            source: string;
         }[];
+        warning: string | null;
+        graph_rel: string;
     }) => Readonly<{
         error: string | null;
-        warning: string | null;
-        graph_rel: string;
         payload: readonly Readonly<{
-            source: string;
             type: string;
             target: string | number;
+            source: string;
         }>[];
+        warning: string | null;
+        graph_rel: string;
     }>) & {
         config: {
             error: ((val: string | null) => string | null) & {
@@ -5553,22 +5395,22 @@ declare namespace $.$$ {
             };
             graph_rel: (val: string) => string;
             payload: ((val: readonly {
-                source: string;
                 type: string;
                 target: string | number;
+                source: string;
             }[]) => readonly Readonly<{
-                source: string;
                 type: string;
                 target: string | number;
+                source: string;
             }>[]) & {
                 config: ((val: {
-                    source: string;
                     type: string;
                     target: string | number;
+                    source: string;
                 }) => Readonly<{
-                    source: string;
                     type: string;
                     target: string | number;
+                    source: string;
                 }>) & {
                     config: {
                         source: (val: string) => string;
@@ -5579,39 +5421,39 @@ declare namespace $.$$ {
                         };
                     };
                     Value: Readonly<{
-                        source: string;
                         type: string;
                         target: string | number;
+                        source: string;
                     }>;
                 };
                 Value: readonly Readonly<{
-                    source: string;
                     type: string;
                     target: string | number;
+                    source: string;
                 }>[];
             };
         };
         Value: Readonly<{
             error: string | null;
-            warning: string | null;
-            graph_rel: string;
             payload: readonly Readonly<{
-                source: string;
                 type: string;
                 target: string | number;
+                source: string;
             }>[];
+            warning: string | null;
+            graph_rel: string;
         }>;
     };
     export class $visavis_graph extends $.$visavis_graph {
         json(): Readonly<{
             error: string | null;
-            warning: string | null;
-            graph_rel: string;
             payload: readonly Readonly<{
-                source: string;
                 type: string;
                 target: string | number;
+                source: string;
             }>[];
+            warning: string | null;
+            graph_rel: string;
         }>;
         plot_title(): string;
         data(): {

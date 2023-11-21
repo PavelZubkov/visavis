@@ -2135,7 +2135,7 @@ declare namespace $ {
 declare namespace $.$$ {
     class $mol_hotkey extends $.$mol_hotkey {
         key(): {
-            [x: number]: ((event: KeyboardEvent) => void) | undefined;
+            readonly [x: number]: ((event: KeyboardEvent) => void) | undefined;
             readonly backspace?: ((event: KeyboardEvent) => void) | undefined;
             readonly tab?: ((event: KeyboardEvent) => void) | undefined;
             readonly enter?: ((event: KeyboardEvent) => void) | undefined;
@@ -2951,23 +2951,13 @@ declare namespace $.$$ {
             title_a?: string | undefined;
             title_b?: string | undefined;
             object_repr?: string | undefined;
-            comp_end?: {
-                [x: string]: number;
-            } | undefined;
+            comp_end?: Readonly<Record<string, number>> | undefined;
             comp_range?: readonly number[] | undefined;
-            comp_start?: {
-                [x: string]: number;
-            } | undefined;
+            comp_start?: Readonly<Record<string, number>> | undefined;
             title_c?: string | undefined;
-            comp_a?: {
-                [x: string]: number;
-            } | undefined;
-            comp_b?: {
-                [x: string]: number;
-            } | undefined;
-            comp_c?: {
-                [x: string]: number;
-            } | undefined;
+            comp_a?: Readonly<Record<string, number>> | undefined;
+            comp_b?: Readonly<Record<string, number>> | undefined;
+            comp_c?: Readonly<Record<string, number>> | undefined;
             range_a?: readonly number[] | undefined;
             range_b?: readonly number[] | undefined;
             range_c?: readonly number[] | undefined;
